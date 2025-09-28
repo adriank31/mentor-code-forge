@@ -1,73 +1,64 @@
-# Welcome to your Lovable project
+# CodeCoach - Programming Learning Platform
 
-## Project info
+A beautiful, dark-first coding learning platform built with React, TypeScript, and Tailwind CSS. Features interactive playgrounds for Python, SQL, C/C++, and Java with a polished UI inspired by Codewars.
 
-**URL**: https://lovable.dev/projects/6a292076-5d37-4915-9c9b-805afeac2b43
+## Features
 
-## How can I edit this code?
+- 🌙 **Dark-first design** with excellent light mode support
+- 🏃‍♂️ **Interactive playgrounds** for 4 programming languages
+- 📚 **Learning paths** with structured curricula
+- 🎯 **Practice exercises** with difficulty filtering
+- 👥 **Community features** with discussions and leaderboards
+- 📊 **Progress tracking** with achievements and analytics
+- 📖 **Comprehensive documentation** and tutorials
 
-There are several ways of editing your application.
+## Quick Start
 
-**Use Lovable**
+```bash
+# Install dependencies
+npm install
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6a292076-5d37-4915-9c9b-805afeac2b43) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
+
+# Build for production
+npm run build
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Tech Stack
 
-**Use GitHub Codespaces**
+- **React 18** with TypeScript
+- **Vite** for fast development and building
+- **Tailwind CSS** for styling with custom design system
+- **shadcn/ui** components for consistent UI
+- **React Router** for client-side routing
+- **Lucide React** for icons
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Design System
 
-## What technologies are used for this project?
+The app uses a comprehensive design system with:
+- HSL color tokens for consistent theming
+- Custom button variants (hero, pill, success, warning)
+- Difficulty badges with semantic colors
+- Gradient backgrounds and smooth transitions
+- Professional typography and spacing
 
-This project is built with:
+## Project Structure
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui components
+│   ├── navigation/     # Navigation components
+│   └── ...
+├── pages/              # Route components
+│   ├── playground/     # Language playground pages
+│   └── ...
+└── lib/                # Utilities and helpers
+```
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/6a292076-5d37-4915-9c9b-805afeac2b43) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT

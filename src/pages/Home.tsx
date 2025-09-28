@@ -1,0 +1,259 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { DifficultyBadge } from "@/components/DifficultyBadge";
+import { ArrowRight, Code, Shield, Share, Zap, TrendingUp, BookOpen, Users, Sparkles, Clock, Target } from "lucide-react";
+
+const stats = [
+  { label: "Active Learners", value: "50,000+" },
+  { label: "Exercises Completed", value: "2.1M+" },
+  { label: "Success Rate", value: "94%" },
+];
+
+const features = [
+  {
+    icon: Code,
+    title: "Guided Exercises",
+    description: "Step-by-step coding challenges that build your skills progressively."
+  },
+  {
+    icon: Shield,
+    title: "Secure by Default",
+    description: "Practice in a safe, sandboxed environment with real-time feedback."
+  },
+  {
+    icon: Share,
+    title: "Shareable Snippets",
+    description: "Save and share your solutions with the community."
+  },
+  {
+    icon: Zap,
+    title: "Instant Feedback",
+    description: "Get immediate results and explanations for your code."
+  },
+  {
+    icon: TrendingUp,
+    title: "Progressive Difficulty",
+    description: "Start simple and work your way up to advanced challenges."
+  },
+  {
+    icon: BookOpen,
+    title: "Rich Documentation",
+    description: "Comprehensive guides and references for every language."
+  },
+];
+
+const latestPractice = [
+  {
+    title: "Binary Tree Traversal",
+    difficulty: "intermediate" as const,
+    language: "Python",
+    completions: 1240,
+    estimatedTime: "25 min"
+  },
+  {
+    title: "SQL Join Optimization",
+    difficulty: "advanced" as const,
+    language: "SQL",
+    completions: 856,
+    estimatedTime: "35 min"
+  },
+  {
+    title: "Array Manipulation",
+    difficulty: "beginner" as const,
+    language: "Java",
+    completions: 2100,
+    estimatedTime: "15 min"
+  },
+];
+
+export default function Home() {
+  return (
+    <div className="space-y-16 pb-16">
+      {/* Hero Section */}
+      <section className="relative px-4 pt-16 pb-24 md:px-6 lg:pt-24 lg:pb-32">
+        <div className="absolute inset-0 bg-gradient-surface opacity-50"></div>
+        <div className="relative max-w-4xl mx-auto text-center">
+          <Badge className="mb-6 px-4 py-1.5 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
+            <Sparkles className="w-4 h-4 mr-2" />
+            Master Programming Skills
+          </Badge>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
+            Learn to Code
+            <span className="block bg-gradient-primary bg-clip-text text-transparent">
+              Like a Pro
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
+            Master Python, SQL, C/C++, and Java through hands-on exercises, guided paths, and real-world projects.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button variant="hero" size="lg" className="group">
+              Try Python
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+            <Button variant="outline" size="lg">
+              View Documentation
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section className="px-4 md:px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center">
+                <div className="text-3xl md:text-4xl font-bold text-primary mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-muted-foreground font-medium">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="px-4 md:px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Everything You Need to Excel
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Our platform provides all the tools and resources you need to become a skilled developer.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <Card key={index} className="border-border/50 bg-gradient-surface hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
+                <CardHeader>
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
+                    <feature.icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-base leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Latest Practice */}
+      <section className="px-4 md:px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-3xl font-bold mb-2">Latest Practice</h2>
+              <p className="text-muted-foreground">Try these popular exercises from our community</p>
+            </div>
+            <Button variant="outline">
+              View All
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {latestPractice.map((exercise, index) => (
+              <Card key={index} className="border-border/50 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-lg group-hover:text-primary transition-colors">
+                        {exercise.title}
+                      </CardTitle>
+                      <div className="flex items-center gap-2 mt-2">
+                        <DifficultyBadge difficulty={exercise.difficulty} />
+                        <Badge variant="outline" className="text-xs">
+                          {exercise.language}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      {exercise.completions} completed
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      {exercise.estimatedTime}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="px-4 md:px-6 pt-16 border-t border-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h3 className="font-semibold mb-4">Product</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">Practice</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Paths</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Catalog</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Playgrounds</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Company</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Press</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">Legal</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Security</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">GDPR</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold mb-4">About</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li><a href="#" className="hover:text-foreground transition-colors">Community</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Support</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="flex flex-col md:flex-row items-center justify-between py-8 border-t border-border">
+            <div className="flex items-center gap-2 mb-4 md:mb-0">
+              <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-lg">C</span>
+              </div>
+              <span className="font-bold text-xl">CodeCoach</span>
+            </div>
+            <p className="text-muted-foreground text-center md:text-right">
+              © 2024 CodeCoach. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
