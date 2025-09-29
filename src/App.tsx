@@ -11,10 +11,7 @@ import Catalog from "./pages/Catalog";
 import Community from "./pages/Community";
 import Progress from "./pages/Progress";
 import Docs from "./pages/Docs";
-import PythonPlayground from "./pages/playground/Python";
-import SQLPlayground from "./pages/playground/SQL";
-import CppPlayground from "./pages/playground/Cpp";
-import JavaPlayground from "./pages/playground/Java";
+import CppLabPlayground from "./pages/playground/CppLab";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -32,10 +29,7 @@ const App = () => (
             <Route path="/community" element={<Community />} />
             <Route path="/progress" element={<Progress />} />
             <Route path="/docs" element={<Docs />} />
-            <Route path="/playground/python" element={<PythonPlayground />} />
-            <Route path="/playground/sql" element={<SQLPlayground />} />
-            <Route path="/playground/cpp" element={<CppPlayground />} />
-            <Route path="/playground/java" element={<JavaPlayground />} />
+            <Route path="/playground/cpp" element={<CppLabPlayground />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

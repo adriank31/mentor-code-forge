@@ -19,7 +19,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
     
-    --primary: 0 84% 60%;
+    --primary: 187 85% 55%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 220 14% 96%;
@@ -28,8 +28,8 @@
     --muted: 220 14% 96%;
     --muted-foreground: 0 0% 45%;
     
-    --accent: 220 14% 96%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 142 76% 45%;
+    --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -53,7 +53,7 @@
     --difficulty-advanced: 0 84% 60%;
     --difficulty-expert: 271 81% 56%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(0 84% 50%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(187 85% 55%) 0%, hsl(142 76% 45%) 100%);
     --gradient-surface: linear-gradient(180deg, hsl(var(--surface)) 0%, hsl(220 14% 96%) 100%);
     
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -86,7 +86,7 @@
     --popover: 0 0% 4%;
     --popover-foreground: 0 0% 95%;
     
-    --primary: 0 84% 60%;
+    --primary: 187 85% 55%;
     --primary-foreground: 0 0% 100%;
     
     --secondary: 0 0% 14%;
@@ -95,8 +95,8 @@
     --muted: 0 0% 14%;
     --muted-foreground: 0 0% 63%;
     
-    --accent: 0 0% 14%;
-    --accent-foreground: 0 0% 95%;
+    --accent: 142 76% 45%;
+    --accent-foreground: 0 0% 100%;
     
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
@@ -120,7 +120,7 @@
     --difficulty-advanced: 0 84% 60%;
     --difficulty-expert: 271 81% 56%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(0 84% 50%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(187 85% 55%) 0%, hsl(142 76% 45%) 100%);
     --gradient-surface: linear-gradient(180deg, hsl(var(--surface)) 0%, hsl(0 0% 10%) 100%);
     
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);

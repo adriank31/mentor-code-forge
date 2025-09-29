@@ -54,7 +54,7 @@ export function TopNav({ onMenuClick }: TopNavProps) {
             <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-lg">C</span>
             </div>
-            <span className="font-bold text-xl hidden sm:inline">CodeCoach</span>
+            <span className="font-bold text-xl hidden sm:inline">CureCee</span>
           </NavLink>
 
           <nav className="hidden md:flex items-center gap-1">

@@ -5,65 +5,65 @@ import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { ArrowRight, Code, Shield, Share, Zap, TrendingUp, BookOpen, Users, Sparkles, Clock, Target } from "lucide-react";
 
 const stats = [
-  { label: "Active Learners", value: "50,000+" },
-  { label: "Exercises Completed", value: "2.1M+" },
-  { label: "Success Rate", value: "94%" },
+  { label: "Bugs Fixed", value: "127K+" },
+  { label: "Labs Completed", value: "89K+" },
+  { label: "Secure Projects Built", value: "12K+" },
 ];
 
 const features = [
   {
-    icon: Code,
-    title: "Guided Exercises",
-    description: "Step-by-step coding challenges that build your skills progressively."
-  },
-  {
     icon: Shield,
-    title: "Secure by Default",
-    description: "Practice in a safe, sandboxed environment with real-time feedback."
+    title: "Sanitizer-Powered Labs",
+    description: "Detect memory bugs, race conditions, and undefined behavior with ASan, TSan, and UBSan."
   },
   {
-    icon: Share,
-    title: "Shareable Snippets",
-    description: "Save and share your solutions with the community."
+    icon: Code,
+    title: "Secure Coding Lessons",
+    description: "Learn RAII, smart pointers, safe I/O, and exploit prevention techniques step-by-step."
   },
   {
     icon: Zap,
-    title: "Instant Feedback",
-    description: "Get immediate results and explanations for your code."
+    title: "Fuzz Testing Playground",
+    description: "Discover edge cases and vulnerabilities using integrated fuzzing tools."
   },
   {
-    icon: TrendingUp,
-    title: "Progressive Difficulty",
-    description: "Start simple and work your way up to advanced challenges."
+    icon: Target,
+    title: "Modern C++ Safety",
+    description: "Master modern C++ patterns for memory safety and resource management."
   },
   {
-    icon: BookOpen,
-    title: "Rich Documentation",
-    description: "Comprehensive guides and references for every language."
+    icon: Sparkles,
+    title: "AI Explanations",
+    description: "Get plain-English explanations of bugs, sanitizer output, and security concepts."
+  },
+  {
+    icon: Users,
+    title: "Capstone Bug Bashes",
+    description: "Join community events to hunt and patch vulnerabilities in realistic codebases."
   },
 ];
 
 const latestPractice = [
   {
-    title: "Binary Tree Traversal",
-    difficulty: "intermediate" as const,
-    language: "Python",
-    completions: 1240,
-    estimatedTime: "25 min"
-  },
-  {
-    title: "SQL Join Optimization",
-    difficulty: "advanced" as const,
-    language: "SQL",
-    completions: 856,
-    estimatedTime: "35 min"
-  },
-  {
-    title: "Array Manipulation",
+    title: "Buffer Overflow in String Copy",
     difficulty: "beginner" as const,
-    language: "Java",
-    completions: 2100,
-    estimatedTime: "15 min"
+    language: "C/C++",
+    completions: 3420,
+    estimatedTime: "20 min"
+  },
+  {
+    title: "Use-After-Free Detection",
+    difficulty: "intermediate" as const,
+    language: "C/C++",
+    completions: 1856,
+    estimatedTime: "30 min"
+  },
+  {
+    title: "Race Condition on Shared Counter",
+    difficulty: "advanced" as const,
+    language: "C/C++",
+    completions: 892,
+    estimatedTime: "40 min"
   },
 ];
 
@@ -75,25 +75,25 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-surface opacity-50"></div>
         <div className="relative max-w-4xl mx-auto text-center">
           <Badge className="mb-6 px-4 py-1.5 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">
-            <Sparkles className="w-4 h-4 mr-2" />
-            Master Programming Skills
+            <Shield className="w-4 h-4 mr-2" />
+            Secure Systems Engineering
           </Badge>
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
-            Learn to Code
+            C/C++ You Can Trust
             <span className="block bg-gradient-primary bg-clip-text text-transparent">
-              Like a Pro
+              Build Secure Systems
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Master Python, SQL, C/C++, and Java through hands-on exercises, guided paths, and real-world projects.
+            Learn to write secure C/C++ and practice fixing real bugs through hands-on labs with sanitizers and fuzzers.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="hero" size="lg" className="group">
-              Try Python
+              Start Learning Secure C/C++
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button variant="outline" size="lg">
-              View Documentation
+              Browse Curriculum
             </Button>
           </div>
         </div>
@@ -154,8 +154,8 @@ export default function Home() {
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Latest Practice</h2>
-              <p className="text-muted-foreground">Try these popular exercises from our community</p>
+              <h2 className="text-3xl font-bold mb-2">Latest Labs</h2>
+              <p className="text-muted-foreground">Try these popular secure C/C++ labs from our community</p>
             </div>
             <Button variant="outline">
               View All
@@ -206,18 +206,18 @@ export default function Home() {
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Practice</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Paths</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Catalog</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Playgrounds</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Practice</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Labs</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Playground</a></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">About CureCee</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Careers</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Press</a></li>
               </ul>
             </div>
@@ -231,9 +231,9 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold mb-4">About</h3>
+              <h3 className="font-semibold mb-4">Community</h3>
               <ul className="space-y-2 text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition-colors">Community</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Discord</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Support</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Documentation</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Status</a></li>
@@ -246,10 +246,10 @@ export default function Home() {
               <div className="h-8 w-8 rounded-lg bg-gradient-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-lg">C</span>
               </div>
-              <span className="font-bold text-xl">CodeCoach</span>
+              <span className="font-bold text-xl">CureCee</span>
             </div>
             <p className="text-muted-foreground text-center md:text-right">
-              © 2024 CodeCoach. All rights reserved.
+              © 2025 CureCee. All rights reserved.
             </p>
           </div>
         </div>
