@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Layout } from "@/components/Layout";
@@ -18,35 +17,31 @@ import CppPlayground from "./pages/playground/Cpp";
 import JavaPlayground from "./pages/playground/Java";
 import NotFound from "./pages/NotFound";
 
-const queryClient = new QueryClient();
-
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="dark">
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/practice" element={<Practice />} />
-              <Route path="/paths" element={<Paths />} />
-              <Route path="/catalog" element={<Catalog />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/progress" element={<Progress />} />
-              <Route path="/docs" element={<Docs />} />
-              <Route path="/playground/python" element={<PythonPlayground />} />
-              <Route path="/playground/sql" element={<SQLPlayground />} />
-              <Route path="/playground/cpp" element={<CppPlayground />} />
-              <Route path="/playground/java" element={<JavaPlayground />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
+  <ThemeProvider defaultTheme="dark">
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/practice" element={<Practice />} />
+            <Route path="/paths" element={<Paths />} />
+            <Route path="/catalog" element={<Catalog />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/docs" element={<Docs />} />
+            <Route path="/playground/python" element={<PythonPlayground />} />
+            <Route path="/playground/sql" element={<SQLPlayground />} />
+            <Route path="/playground/cpp" element={<CppPlayground />} />
+            <Route path="/playground/java" element={<JavaPlayground />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </TooltipProvider>
+  </ThemeProvider>
 );
 
 export default App;
