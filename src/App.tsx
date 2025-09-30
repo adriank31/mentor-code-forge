@@ -6,8 +6,11 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Layout } from "@/components/Layout";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
+import PuzzleDetail from "./pages/PuzzleDetail";
 import Labs from "./pages/Labs";
 import LabDetail from "./pages/LabDetail";
+import Projects from "./pages/Projects";
+import ProjectDetail from "./pages/ProjectDetail";
 import Paths from "./pages/Paths";
 import PathDetail from "./pages/PathDetail";
 import Catalog from "./pages/Catalog";
@@ -30,8 +33,11 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/practice" element={<Practice />} />
+            <Route path="/practice/puzzles/:slug" element={<PuzzleDetail />} />
             <Route path="/labs" element={<Labs />} />
             <Route path="/labs/:slug" element={<LabDetail />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:slug" element={<ProjectDetail />} />
             <Route path="/paths" element={<Paths />} />
             <Route path="/paths/:slug" element={<PathDetail />} />
             <Route path="/catalog" element={<Catalog />} />

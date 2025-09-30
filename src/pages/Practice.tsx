@@ -5,117 +5,66 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Users, Clock, Code } from "lucide-react";
+import { Search, Filter, Clock } from "lucide-react";
+import { puzzles } from "@/data/puzzles";
+import { useNavigate } from "react-router-dom";
 
-const exercises = [
-  {
-    slug: "buffer-overflow-strcpy",
-    title: "Buffer Overflow in strcpy",
-    description: "Fix an off-by-one error in a bounded string copy operation.",
-    difficulty: "beginner" as const,
-    language: "C/C++",
-    bugType: "Memory",
-    topics: ["Memory", "Strings"],
-    completions: 2340,
-    estimatedTime: "20 min",
-    success_rate: 78
-  },
-  {
-    slug: "use-after-free",
-    title: "Use-After-Free Vulnerability",
-    description: "Detect and fix a dangling pointer bug after memory deallocation.",
-    difficulty: "intermediate" as const,
-    language: "C/C++",
-    bugType: "Memory",
-    topics: ["Memory", "Pointers"],
-    completions: 1120,
-    estimatedTime: "30 min",
-    success_rate: 65
-  },
-  {
-    slug: "race-condition-counter",
-    title: "Race Condition on Shared Counter",
-    description: "Fix non-atomic increment operations causing race conditions.",
-    difficulty: "advanced" as const,
-    language: "C/C++",
-    bugType: "Concurrency",
-    topics: ["Concurrency", "Threading"],
-    completions: 654,
-    estimatedTime: "40 min",
-    success_rate: 59
-  },
-  {
-    slug: "format-string-vuln",
-    title: "Format String Vulnerability",
-    description: "Identify and fix dangerous printf(user_input) patterns.",
-    difficulty: "intermediate" as const,
-    language: "C/C++",
-    bugType: "I/O",
-    topics: ["I/O", "Security"],
-    completions: 890,
-    estimatedTime: "25 min",
-    success_rate: 72
-  },
-  {
-    slug: "json-parser-crash",
-    title: "JSON Parser Buffer Overflow",
-    description: "Fix missing bounds checks in a token parser.",
-    difficulty: "advanced" as const,
-    language: "C/C++",
-    bugType: "Parsing",
-    topics: ["Parsing", "Memory"],
-    completions: 423,
-    estimatedTime: "40 min",
-    success_rate: 55
-  },
-  {
-    slug: "integer-overflow-alloc",
-    title: "Integer Overflow in Allocation",
-    description: "Prevent size calculation wrap-around leading to heap corruption.",
-    difficulty: "intermediate" as const,
-    language: "C/C++",
-    bugType: "Hardening",
-    topics: ["Hardening", "Memory"],
-    completions: 756,
-    estimatedTime: "25 min",
-    success_rate: 68
-  },
-];
-
-const bugTypes = ["Memory", "Concurrency", "I/O", "Parsing", "Hardening"];
+const categories = ["Embedded Systems", "Systems Programming", "Firmware Engineering", "Cybersecurity Engineering", "Toolchain Developer"];
 
 export default function Practice() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("all");
-  const [selectedBugTypes, setSelectedBugTypes] = useState<string[]>([]);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  const toggleBugType = (bugType: string) => {
-    setSelectedBugTypes(prev =>
-      prev.includes(bugType) ? prev.filter(t => t !== bugType) : [...prev, bugType]
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
     );
   };
 
-  const filteredExercises = exercises.filter(exercise => {
-    const matchesSearch = exercise.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exercise.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exercise.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesDifficulty = selectedDifficulty === "all" || exercise.difficulty === selectedDifficulty;
-    const matchesBugType = selectedBugTypes.length === 0 || selectedBugTypes.includes(exercise.bugType);
-    
-    return matchesSearch && matchesDifficulty && matchesBugType;
+  const filteredPuzzles = puzzles.filter(puzzle => {
+    const matchesSearch = puzzle.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         puzzle.summary.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDifficulty = selectedDifficulty === "all" || puzzle.difficulty === selectedDifficulty;
+    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(puzzle.category);
+    return matchesSearch && matchesDifficulty && matchesCategory;
   });
+
+  const getCategoryCount = (category: string) => {
+    return puzzles.filter(p => p.category === category).length;
+  };
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold mb-2">Practice Exercises</h1>
+        <h1 className="text-3xl font-bold mb-2">C/C++ Practice Puzzles</h1>
         <p className="text-muted-foreground">
-          Sharpen your coding skills with our comprehensive collection of programming challenges.
+          Sharpen your skills with algorithmic and security puzzles focusing on C/C++ fundamentals.
         </p>
       </div>
 
-      {/* Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Category Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.map((category) => (
+              <div key={category} className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium">{category}</span>
+                  <span className="text-muted-foreground">0 / {getCategoryCount(category)}</span>
+                </div>
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary" style={{ width: "0%" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -123,128 +72,100 @@ export default function Practice() {
             Filters
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                  <Input
-                    placeholder="Search exercises, topics, or keywords..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                <Input
+                  placeholder="Search puzzles..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
               </div>
-              <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-                <SelectTrigger className="w-full md:w-48">
-                  <SelectValue placeholder="Difficulty" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Difficulties</SelectItem>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
-                  <SelectItem value="expert">Expert</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
-            <div>
-              <div className="text-sm font-medium mb-2">Bug Type</div>
-              <div className="flex flex-wrap gap-2">
-                {bugTypes.map((bugType) => (
-                  <Badge
-                    key={bugType}
-                    variant={selectedBugTypes.includes(bugType) ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => toggleBugType(bugType)}
-                  >
-                    {bugType}
-                  </Badge>
-                ))}
-              </div>
+            <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
+              <SelectTrigger className="w-full md:w-48">
+                <SelectValue placeholder="Difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Difficulties</SelectItem>
+                <SelectItem value="beginner">Beginner</SelectItem>
+                <SelectItem value="intermediate">Intermediate</SelectItem>
+                <SelectItem value="advanced">Advanced</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <div className="text-sm font-medium mb-2">Category</div>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <Badge
+                  key={category}
+                  variant={selectedCategories.includes(category) ? "default" : "outline"}
+                  className="cursor-pointer"
+                  onClick={() => toggleCategory(category)}
+                >
+                  {category}
+                </Badge>
+              ))}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Results */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {filteredExercises.map((exercise, index) => (
-          <Card key={index} className="hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
-                    {exercise.title}
-                  </CardTitle>
-                  <CardDescription className="mt-2 line-clamp-2">
-                    {exercise.description}
-                  </CardDescription>
+      {filteredPuzzles.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6 text-center">
+            <p className="text-muted-foreground mb-4">No puzzles match your filters.</p>
+            <Button variant="outline" onClick={() => {
+              setSearchTerm("");
+              setSelectedDifficulty("all");
+              setSelectedCategories([]);
+            }}>
+              Clear Filters
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {filteredPuzzles.map((puzzle) => (
+            <Card key={puzzle.slug} className="hover:shadow-lg transition-all">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-xl">{puzzle.title}</CardTitle>
+                    <CardDescription className="mt-2">{puzzle.summary}</CardDescription>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="flex flex-wrap items-center gap-2 mt-4">
-                <DifficultyBadge difficulty={exercise.difficulty} />
-                <Badge variant="outline" className="text-xs">
-                  <Code className="w-3 h-3 mr-1" />
-                  {exercise.language}
-                </Badge>
-                {exercise.topics.map((topic, topicIndex) => (
-                  <Badge key={topicIndex} variant="secondary" className="text-xs">
-                    {topic}
+                <div className="flex flex-wrap items-center gap-2 mt-4">
+                  <DifficultyBadge difficulty={puzzle.difficulty} />
+                  <Badge variant="secondary">{puzzle.category}</Badge>
+                  <Badge variant="outline" className="text-xs">
+                    <Clock className="w-3 h-3 mr-1" />
+                    {puzzle.estMinutes} min
                   </Badge>
-                ))}
-              </div>
-            </CardHeader>
-            
-            <CardContent>
-              <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    {exercise.completions}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {exercise.estimatedTime}
-                  </div>
                 </div>
-                <div className="text-right">
-                  <span className={`font-medium ${
-                    exercise.success_rate >= 80 ? 'text-success' :
-                    exercise.success_rate >= 60 ? 'text-warning' : 'text-destructive'
-                  }`}>
-                    {exercise.success_rate}% success
-                  </span>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {puzzle.tags.map(tag => (
+                    <Badge key={tag} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
                 </div>
-              </div>
-              
-              <Button 
-                className="w-full" 
-                variant="outline"
-                onClick={() => window.location.href = `/labs/${exercise.slug}`}
-              >
-                Start Exercise
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredExercises.length === 0 && (
-        <div className="text-center py-12">
-          <div className="text-muted-foreground mb-4">
-            No exercises found matching your criteria.
-          </div>
-          <Button variant="outline" onClick={() => {
-            setSearchTerm("");
-            setSelectedDifficulty("all");
-            setSelectedBugTypes([]);
-          }}>
-            Clear Filters
-          </Button>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => navigate(`/practice/puzzles/${puzzle.slug}`)}
+                >
+                  Start Exercise
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
     </div>

@@ -98,7 +98,7 @@ export default function Home() {
               variant="hero" 
               size="lg" 
               className="group"
-              onClick={() => navigate("/paths/foundations-safe-basics")}
+              onClick={() => navigate("/practice/puzzles/overflow-detection")}
             >
               Start Learning Secure C/C++
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

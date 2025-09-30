@@ -9,7 +9,8 @@ import {
   X,
   Home,
   Library,
-  FlaskConical
+  FlaskConical,
+  FolderCode
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -22,6 +23,7 @@ const navItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "Practice", href: "/practice", icon: Code },
   { name: "Labs", href: "/labs", icon: FlaskConical },
+  { name: "Projects", href: "/projects", icon: FolderCode },
   { name: "Paths", href: "/paths", icon: BookOpen },
   { name: "Catalog", href: "/catalog", icon: Library },
   { name: "Progress", href: "/progress", icon: TrendingUp },
