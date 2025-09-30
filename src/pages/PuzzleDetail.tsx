@@ -3,15 +3,55 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
-import { Lightbulb, Play, Clock } from "lucide-react";
+import { Lightbulb, Play, Clock, CheckCircle2 } from "lucide-react";
 import { puzzles } from "@/data/puzzles";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 export default function PuzzleDetail() {
   const { slug } = useParams();
   const puzzle = puzzles.find(p => p.slug === slug);
   const [hintsOpen, setHintsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleMarkComplete = async () => {
+    if (!user) {
+      toast({
+        title: 'Sign in required',
+        description: 'Please sign in to track your progress',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('record-puzzle-completion', {
+        body: { puzzleSlug: slug }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Puzzle completed!',
+        description: 'Great work! Your progress has been saved.',
+      });
+    } catch (error) {
+      console.error('Error recording completion:', error);
+      toast({
+        title: 'Error',
+        description: 'Could not save your progress. Try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!puzzle) {
     return (
@@ -105,12 +145,19 @@ export default function PuzzleDetail() {
       </Collapsible>
 
       <div className="flex gap-3">
-        <Button size="lg" className="flex-1">
-          <Play className="w-4 h-4 mr-2" />
-          Solve Puzzle
+        <Button size="lg" className="flex-1" onClick={handleMarkComplete} disabled={loading}>
+          {loading ? (
+            <>Saving...</>
+          ) : (
+            <>
+              <CheckCircle2 className="w-4 h-4 mr-2" />
+              Mark Complete
+            </>
+          )}
         </Button>
         <Button size="lg" variant="outline">
-          View Solution
+          <Play className="w-4 h-4 mr-2" />
+          Try in Playground
         </Button>
       </div>
     </div>

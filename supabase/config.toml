@@ -1,1 +1,16 @@
 project_id = "bpwjdblhcdbwwzuzcrbx"
+
+[functions.create-checkout-session]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.record-puzzle-completion]
+verify_jwt = true
+
+[functions.record-lab-completion]
+verify_jwt = true
+
+[functions.record-project-completion]
+verify_jwt = true

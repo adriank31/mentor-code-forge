@@ -1,10 +1,10 @@
 import { Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { useUser, signInWithGithub, signOut } from "@/lib/auth";
-import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { Badge } from "@/components/ui/badge";
 
 interface TopNavProps {
   onMenuClick: () => void;
@@ -18,25 +18,8 @@ const navItems = [
 ];
 
 export function TopNav({ onMenuClick }: TopNavProps) {
-  const user = useUser();
-
-  const handleSignIn = async () => {
-    try {
-      await signInWithGithub();
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Please try again.";
-      toast({ title: "Sign in failed", description: message });
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Please try again.";
-      toast({ title: "Error signing out", description: message });
-    }
-  };
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-md">
@@ -84,13 +67,17 @@ export function TopNav({ onMenuClick }: TopNavProps) {
             <Bell className="h-4 w-4" />
           </Button>
 
-          {/* Loading state shows Sign In; once user resolves, we switch */}
           {user ? (
-            <Button variant="hero" size="sm" onClick={handleSignOut}>
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-3">
+              {profile?.is_pro && (
+                <Badge variant="default" className="hidden sm:flex">PRO</Badge>
+              )}
+              <Button variant="hero" size="sm" onClick={signOut}>
+                Sign Out
+              </Button>
+            </div>
           ) : (
-            <Button variant="hero" size="sm" onClick={handleSignIn}>
+            <Button variant="hero" size="sm" onClick={() => navigate('/auth')}>
               Sign In
             </Button>
           )}

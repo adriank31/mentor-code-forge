@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,7 +6,9 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, X, Crown, Shield, Zap, Users, HelpCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const faqItems = [
   {
@@ -66,8 +68,44 @@ const features = [
 
 export default function Pricing() {
   const [isYearly, setIsYearly] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { user, profile, refreshProfile } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const status = searchParams.get('status');
+    if (status === 'success') {
+      toast({
+        title: 'Payment successful!',
+        description: 'Your Pro subscription is now active.',
+      });
+      refreshProfile();
+    } else if (status === 'cancel') {
+      toast({
+        title: 'Checkout cancelled',
+        description: 'You can upgrade anytime.',
+        variant: 'destructive',
+      });
+    }
+  }, [searchParams, toast, refreshProfile]);
 
   const handleUpgrade = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    if (profile?.is_pro) {
+      toast({
+        title: 'Already subscribed',
+        description: 'You already have an active Pro subscription.',
+      });
+      return;
+    }
+
+    setLoading(true);
     try {
       const priceId = isYearly ? "price_yearly" : "price_monthly";
       const interval = isYearly ? "year" : "month";
@@ -86,8 +124,8 @@ export default function Pricing() {
         return;
       }
       
-      if (data?.sessionUrl) {
-        window.location.href = data.sessionUrl;
+      if (data?.url) {
+        window.location.href = data.url;
       } else {
         throw new Error('No session URL returned');
       }
@@ -98,6 +136,8 @@ export default function Pricing() {
         description: "Try again or contact support.",
         variant: "destructive"
       });
+    } finally {
+      setLoading(false);
     }
   };
 

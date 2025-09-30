@@ -6,10 +6,52 @@ import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Lock, Play, TestTube, Send } from "lucide-react";
 import { labs } from "@/data/labs";
+import { ProGate } from "@/components/ProGate";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 export default function LabDetail() {
   const { slug } = useParams();
   const lab = labs.find(l => l.slug === slug);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  const handleSubmit = async () => {
+    if (!user) {
+      toast({
+        title: 'Sign in required',
+        description: 'Please sign in to submit your work',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('record-lab-completion', {
+        body: { labSlug: slug, success: true }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Lab completed!',
+        description: 'Excellent work! Your patch has been submitted.',
+      });
+    } catch (error) {
+      console.error('Error submitting lab:', error);
+      toast({
+        title: 'Submission failed',
+        description: 'Could not submit your work. Try again.',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!lab) {
     return (
@@ -20,7 +62,7 @@ export default function LabDetail() {
     );
   }
 
-  return (
+  const labContent = (
     <div className="h-screen flex flex-col">
       <div className="border-b p-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -43,9 +85,9 @@ export default function LabDetail() {
             <TestTube className="w-4 h-4 mr-2" />
             Test
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={handleSubmit} disabled={loading}>
             <Send className="w-4 h-4 mr-2" />
-            Submit Patch
+            {loading ? 'Submitting...' : 'Submit Patch'}
           </Button>
         </div>
       </div>
@@ -111,4 +153,6 @@ export default function LabDetail() {
       </div>
     </div>
   );
+
+  return lab.proOnly ? <ProGate>{labContent}</ProGate> : labContent;
 }

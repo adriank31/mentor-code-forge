@@ -1,29 +1,52 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// TODO: Replace these with your actual Stripe test price IDs from Stripe Dashboard
+const STRIPE_PRICES = {
+  monthly: Deno.env.get('STRIPE_MONTHLY_PRICE_ID') || 'price_MONTHLY_REPLACE_ME',
+  yearly: Deno.env.get('STRIPE_YEARLY_PRICE_ID') || 'price_YEARLY_REPLACE_ME',
+};
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { priceId, interval } = await req.json();
-
-    // Get Stripe secret key from environment
+    
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeKey) {
       throw new Error('Stripe secret key not configured');
     }
 
-    // Get base URL from request origin
-    const baseUrl = req.headers.get('origin') || 'http://localhost:8080';
+    // Get authenticated user
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Create Stripe checkout session
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    const baseUrl = Deno.env.get('VITE_PUBLIC_BASE_URL') || req.headers.get('origin') || 'http://localhost:8080';
+    
+    // Determine which price to use
+    const stripePriceId = interval === 'yearly' ? STRIPE_PRICES.yearly : STRIPE_PRICES.monthly;
+
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
@@ -32,13 +55,13 @@ serve(async (req) => {
       },
       body: new URLSearchParams({
         'mode': 'subscription',
-        'line_items[0][price]': priceId === 'price_yearly' ? 'price_1QYFakeYearlyTestId' : 'price_1QYFakeMonthlyTestId',
+        'line_items[0][price]': stripePriceId,
         'line_items[0][quantity]': '1',
         'success_url': `${baseUrl}/pricing?status=success&session_id={CHECKOUT_SESSION_ID}`,
         'cancel_url': `${baseUrl}/pricing?status=cancel`,
-        'automatic_tax[enabled]': 'true',
-        'customer_creation': 'always',
-        'billing_address_collection': 'required',
+        'customer_email': user.email!,
+        'client_reference_id': user.id,
+        'metadata[user_id]': user.id,
         'metadata[interval]': interval,
       }),
     });
