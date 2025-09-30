@@ -8,7 +8,8 @@ import {
   FileText,
   X,
   Home,
-  Library
+  Library,
+  FlaskConical
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +21,7 @@ interface SidebarProps {
 const navItems = [
   { name: "Home", href: "/", icon: Home },
   { name: "Practice", href: "/practice", icon: Code },
+  { name: "Labs", href: "/labs", icon: FlaskConical },
   { name: "Paths", href: "/paths", icon: BookOpen },
   { name: "Catalog", href: "/catalog", icon: Library },
   { name: "Progress", href: "/progress", icon: TrendingUp },
@@ -28,10 +30,7 @@ const navItems = [
 ];
 
 const playgroundItems = [
-  { name: "Python", href: "/playground/python" },
-  { name: "SQL", href: "/playground/sql" },
   { name: "C/C++", href: "/playground/cpp" },
-  { name: "Java", href: "/playground/java" },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {

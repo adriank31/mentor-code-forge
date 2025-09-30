@@ -9,80 +9,100 @@ import { Search, Filter, Users, Clock, Code } from "lucide-react";
 
 const exercises = [
   {
-    title: "Two Sum Problem",
-    description: "Find two numbers in an array that add up to a target sum.",
+    slug: "buffer-overflow-strcpy",
+    title: "Buffer Overflow in strcpy",
+    description: "Fix an off-by-one error in a bounded string copy operation.",
     difficulty: "beginner" as const,
-    language: "Python",
-    topics: ["Arrays", "Hash Tables"],
-    completions: 3420,
-    estimatedTime: "15 min",
-    success_rate: 85
+    language: "C/C++",
+    bugType: "Memory",
+    topics: ["Memory", "Strings"],
+    completions: 2340,
+    estimatedTime: "20 min",
+    success_rate: 78
   },
   {
-    title: "Binary Tree Traversal",
-    description: "Implement preorder, inorder, and postorder tree traversals.",
+    slug: "use-after-free",
+    title: "Use-After-Free Vulnerability",
+    description: "Detect and fix a dangling pointer bug after memory deallocation.",
     difficulty: "intermediate" as const,
-    language: "Java",
-    topics: ["Trees", "Recursion"],
-    completions: 1240,
-    estimatedTime: "25 min",
-    success_rate: 72
-  },
-  {
-    title: "SQL Query Optimization",
-    description: "Optimize complex database queries for better performance.",
-    difficulty: "advanced" as const,
-    language: "SQL",
-    topics: ["Database", "Performance"],
-    completions: 856,
-    estimatedTime: "35 min",
-    success_rate: 68
-  },
-  {
-    title: "Memory Management",
-    description: "Practice dynamic memory allocation and deallocation in C++.",
-    difficulty: "advanced" as const,
-    language: "C++",
+    language: "C/C++",
+    bugType: "Memory",
     topics: ["Memory", "Pointers"],
+    completions: 1120,
+    estimatedTime: "30 min",
+    success_rate: 65
+  },
+  {
+    slug: "race-condition-counter",
+    title: "Race Condition on Shared Counter",
+    description: "Fix non-atomic increment operations causing race conditions.",
+    difficulty: "advanced" as const,
+    language: "C/C++",
+    bugType: "Concurrency",
+    topics: ["Concurrency", "Threading"],
     completions: 654,
     estimatedTime: "40 min",
     success_rate: 59
   },
   {
-    title: "String Manipulation",
-    description: "Solve various string processing challenges.",
-    difficulty: "beginner" as const,
-    language: "Python",
-    topics: ["Strings", "Algorithms"],
-    completions: 2100,
-    estimatedTime: "20 min",
-    success_rate: 91
+    slug: "format-string-vuln",
+    title: "Format String Vulnerability",
+    description: "Identify and fix dangerous printf(user_input) patterns.",
+    difficulty: "intermediate" as const,
+    language: "C/C++",
+    bugType: "I/O",
+    topics: ["I/O", "Security"],
+    completions: 890,
+    estimatedTime: "25 min",
+    success_rate: 72
   },
   {
-    title: "Graph Algorithms",
-    description: "Implement BFS, DFS, and shortest path algorithms.",
-    difficulty: "expert" as const,
-    language: "Java",
-    topics: ["Graphs", "Algorithms"],
+    slug: "json-parser-crash",
+    title: "JSON Parser Buffer Overflow",
+    description: "Fix missing bounds checks in a token parser.",
+    difficulty: "advanced" as const,
+    language: "C/C++",
+    bugType: "Parsing",
+    topics: ["Parsing", "Memory"],
     completions: 423,
-    estimatedTime: "50 min",
-    success_rate: 42
+    estimatedTime: "40 min",
+    success_rate: 55
+  },
+  {
+    slug: "integer-overflow-alloc",
+    title: "Integer Overflow in Allocation",
+    description: "Prevent size calculation wrap-around leading to heap corruption.",
+    difficulty: "intermediate" as const,
+    language: "C/C++",
+    bugType: "Hardening",
+    topics: ["Hardening", "Memory"],
+    completions: 756,
+    estimatedTime: "25 min",
+    success_rate: 68
   },
 ];
+
+const bugTypes = ["Memory", "Concurrency", "I/O", "Parsing", "Hardening"];
 
 export default function Practice() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
-  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [selectedBugTypes, setSelectedBugTypes] = useState<string[]>([]);
+
+  const toggleBugType = (bugType: string) => {
+    setSelectedBugTypes(prev =>
+      prev.includes(bugType) ? prev.filter(t => t !== bugType) : [...prev, bugType]
+    );
+  };
 
   const filteredExercises = exercises.filter(exercise => {
     const matchesSearch = exercise.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          exercise.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          exercise.topics.some(topic => topic.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesDifficulty = selectedDifficulty === "all" || exercise.difficulty === selectedDifficulty;
-    const matchesLanguage = selectedLanguage === "all" || exercise.language === selectedLanguage;
+    const matchesBugType = selectedBugTypes.length === 0 || selectedBugTypes.includes(exercise.bugType);
     
-    return matchesSearch && matchesDifficulty && matchesLanguage;
+    return matchesSearch && matchesDifficulty && matchesBugType;
   });
 
   return (
@@ -104,42 +124,47 @@ export default function Practice() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search exercises, topics, or keywords..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                  <Input
+                    placeholder="Search exercises, topics, or keywords..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Difficulty" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Difficulties</SelectItem>
+                  <SelectItem value="beginner">Beginner</SelectItem>
+                  <SelectItem value="intermediate">Intermediate</SelectItem>
+                  <SelectItem value="advanced">Advanced</SelectItem>
+                  <SelectItem value="expert">Expert</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <div className="text-sm font-medium mb-2">Bug Type</div>
+              <div className="flex flex-wrap gap-2">
+                {bugTypes.map((bugType) => (
+                  <Badge
+                    key={bugType}
+                    variant={selectedBugTypes.includes(bugType) ? "default" : "outline"}
+                    className="cursor-pointer"
+                    onClick={() => toggleBugType(bugType)}
+                  >
+                    {bugType}
+                  </Badge>
+                ))}
               </div>
             </div>
-            <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Difficulty" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Difficulties</SelectItem>
-                <SelectItem value="beginner">Beginner</SelectItem>
-                <SelectItem value="intermediate">Intermediate</SelectItem>
-                <SelectItem value="advanced">Advanced</SelectItem>
-                <SelectItem value="expert">Expert</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Language" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Languages</SelectItem>
-                <SelectItem value="Python">Python</SelectItem>
-                <SelectItem value="Java">Java</SelectItem>
-                <SelectItem value="C++">C++</SelectItem>
-                <SelectItem value="SQL">SQL</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </CardContent>
       </Card>
@@ -196,7 +221,11 @@ export default function Practice() {
                 </div>
               </div>
               
-              <Button className="w-full" variant="outline">
+              <Button 
+                className="w-full" 
+                variant="outline"
+                onClick={() => window.location.href = `/labs/${exercise.slug}`}
+              >
                 Start Exercise
               </Button>
             </CardContent>
@@ -212,7 +241,7 @@ export default function Practice() {
           <Button variant="outline" onClick={() => {
             setSearchTerm("");
             setSelectedDifficulty("all");
-            setSelectedLanguage("all");
+            setSelectedBugTypes([]);
           }}>
             Clear Filters
           </Button>

@@ -15,11 +15,11 @@ const faqItems = [
   },
   {
     question: "Can I get a refund?",
-    answer: "Yes! We offer a 30-day money-back guarantee. If you're not satisfied within the first 30 days, we'll provide a full refund."
+    answer: "No — we don't offer refunds."
   },
   {
     question: "Do you offer student discounts?",
-    answer: "Yes! Students with a valid .edu email address can get 50% off any plan. Contact support with your student ID for verification."
+    answer: "15% off the Pro plan with a valid .edu email."
   },
   {
     question: "Can I cancel anytime?",

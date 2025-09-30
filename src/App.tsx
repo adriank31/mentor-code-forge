@@ -6,8 +6,12 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Layout } from "@/components/Layout";
 import Home from "./pages/Home";
 import Practice from "./pages/Practice";
+import Labs from "./pages/Labs";
+import LabDetail from "./pages/LabDetail";
 import Paths from "./pages/Paths";
+import PathDetail from "./pages/PathDetail";
 import Catalog from "./pages/Catalog";
+import CourseDetail from "./pages/CourseDetail";
 import Pricing from "./pages/Pricing";
 import Community from "./pages/Community";
 import Progress from "./pages/Progress";
@@ -25,8 +29,12 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/practice" element={<Practice />} />
+            <Route path="/labs" element={<Labs />} />
+            <Route path="/labs/:slug" element={<LabDetail />} />
             <Route path="/paths" element={<Paths />} />
+            <Route path="/paths/:slug" element={<PathDetail />} />
             <Route path="/catalog" element={<Catalog />} />
+            <Route path="/courses/:slug" element={<CourseDetail />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/community" element={<Community />} />
             <Route path="/progress" element={<Progress />} />
