@@ -14,7 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      lab_completions: {
+        Row: {
+          completed_at: string | null
+          id: string
+          lab_slug: string
+          success: boolean | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          lab_slug: string
+          success?: boolean | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          lab_slug?: string
+          success?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          is_pro: boolean | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_end: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id: string
+          is_pro?: boolean | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_end?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          is_pro?: boolean | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_end?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      project_completions: {
+        Row: {
+          completed_at: string | null
+          id: string
+          project_slug: string
+          started_at: string | null
+          status: Database["public"]["Enums"]["project_status"] | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          project_slug: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["project_status"] | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          project_slug?: string
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["project_status"] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      puzzle_completions: {
+        Row: {
+          completed_at: string | null
+          id: string
+          puzzle_slug: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          puzzle_slug: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          puzzle_slug?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +127,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      project_status: "started" | "in_progress" | "completed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +254,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      project_status: ["started", "in_progress", "completed"],
+    },
   },
 } as const
