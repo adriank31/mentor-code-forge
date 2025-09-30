@@ -1,21 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Clock } from "lucide-react";
+import { Search, Filter, Clock, Loader2 } from "lucide-react";
 import { puzzles } from "@/data/puzzles";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const categories = ["Embedded Systems", "Systems Programming", "Firmware Engineering", "Cybersecurity Engineering", "Toolchain Developer"];
 
 export default function Practice() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [completionCounts, setCompletionCounts] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCompletions = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("puzzle_completions")
+          .select("puzzle_slug")
+          .eq("user_id", user.id);
+
+        if (error) throw error;
+
+        // Count completions by category
+        const counts: Record<string, number> = {};
+        categories.forEach(cat => counts[cat] = 0);
+
+        data?.forEach(completion => {
+          const puzzle = puzzles.find(p => p.slug === completion.puzzle_slug);
+          if (puzzle) {
+            counts[puzzle.category] = (counts[puzzle.category] || 0) + 1;
+          }
+        });
+
+        setCompletionCounts(counts);
+      } catch (error: any) {
+        console.error("Error fetching completions:", error);
+        toast({
+          title: "Error loading progress",
+          description: "Could not load your completion progress",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompletions();
+  }, [user, toast]);
 
   const toggleCategory = (category: string) => {
     setSelectedCategories(prev =>
@@ -35,6 +85,10 @@ export default function Practice() {
     return puzzles.filter(p => p.category === category).length;
   };
 
+  const getCompletedCount = (category: string) => {
+    return completionCounts[category] || 0;
+  };
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div>
@@ -49,19 +103,41 @@ export default function Practice() {
           <CardTitle className="text-lg">Category Progress</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((category) => (
-              <div key={category} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">{category}</span>
-                  <span className="text-muted-foreground">0 / {getCategoryCount(category)}</span>
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {categories.map((category) => (
+                <div key={category} className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-2 w-full" />
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: "0%" }} />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {categories.map((category) => {
+                const total = getCategoryCount(category);
+                const completed = getCompletedCount(category);
+                const percentage = total > 0 ? (completed / total) * 100 : 0;
+                
+                return (
+                  <div key={category} className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{category}</span>
+                      <span className="text-muted-foreground">
+                        {completed} / {total}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary transition-all" 
+                        style={{ width: `${percentage}%` }} 
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 

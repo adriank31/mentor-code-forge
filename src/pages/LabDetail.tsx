@@ -31,8 +31,12 @@ export default function LabDetail() {
 
     setLoading(true);
     try {
+      const { data: session } = await supabase.auth.getSession();
       const { error } = await supabase.functions.invoke('record-lab-completion', {
-        body: { labSlug: slug, success: true }
+        body: { labSlug: slug, success: true },
+        headers: {
+          Authorization: `Bearer ${session.session?.access_token}`,
+        },
       });
 
       if (error) throw error;

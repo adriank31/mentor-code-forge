@@ -6,10 +6,9 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// TODO: Replace these with your actual Stripe test price IDs from Stripe Dashboard
 const STRIPE_PRICES = {
-  monthly: Deno.env.get('STRIPE_MONTHLY_PRICE_ID') || 'price_MONTHLY_REPLACE_ME',
-  yearly: Deno.env.get('STRIPE_YEARLY_PRICE_ID') || 'price_YEARLY_REPLACE_ME',
+  monthly: 'price_1SDCXqPsOyMuSwL6i80Z8ETV',
+  yearly: 'price_1SDCYWPsOyMuSwL6rsCV9fAP',
 };
 
 serve(async (req) => {
@@ -18,7 +17,7 @@ serve(async (req) => {
   }
 
   try {
-    const { priceId, interval } = await req.json();
+    const { interval } = await req.json();
     
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
     if (!stripeKey) {
@@ -42,10 +41,10 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    const baseUrl = Deno.env.get('VITE_PUBLIC_BASE_URL') || req.headers.get('origin') || 'http://localhost:8080';
+    const baseUrl = req.headers.get('origin') || 'https://curecee.lovable.app';
     
     // Determine which price to use
-    const stripePriceId = interval === 'yearly' ? STRIPE_PRICES.yearly : STRIPE_PRICES.monthly;
+    const stripePriceId = interval === 'year' ? STRIPE_PRICES.yearly : STRIPE_PRICES.monthly;
 
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
@@ -75,7 +74,7 @@ serve(async (req) => {
     const session = await response.json();
 
     return new Response(
-      JSON.stringify({ sessionUrl: session.url }),
+      JSON.stringify({ url: session.url }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,

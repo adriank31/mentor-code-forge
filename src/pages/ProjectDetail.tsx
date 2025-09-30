@@ -1,14 +1,96 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
-import { Lock, Play, CheckCircle } from "lucide-react";
+import { Lock, Play, CheckCircle, Loader2 } from "lucide-react";
 import { projects } from "@/data/projects";
+import { ProGate } from "@/components/ProGate";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ProjectDetail() {
   const { slug } = useParams();
+  const { user, session } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const project = projects.find(p => p.slug === slug);
+
+  const handleStartProject = async () => {
+    if (!user || !session) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to start projects",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke("record-project-completion", {
+        body: { projectSlug: slug, status: "started" },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Project started!",
+        description: "Your progress has been recorded",
+      });
+    } catch (error: any) {
+      console.error("Error starting project:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Could not record project start",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCompleteProject = async () => {
+    if (!user || !session) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to complete projects",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke("record-project-completion", {
+        body: { projectSlug: slug, status: "completed" },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Congratulations!",
+        description: "Project completed successfully! 🎉",
+      });
+    } catch (error: any) {
+      console.error("Error completing project:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Could not record project completion",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!project) {
     return (
@@ -19,7 +101,7 @@ export default function ProjectDetail() {
     );
   }
 
-  return (
+  const content = (
     <div className="p-4 md:p-6 space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -107,13 +189,37 @@ export default function ProjectDetail() {
           <Play className="w-4 h-4 mr-2" />
           Open Starter
         </Button>
-        <Button size="lg" variant="outline" className="flex-1">
-          Mark In Progress
+        <Button 
+          size="lg" 
+          variant="outline" 
+          className="flex-1"
+          onClick={handleStartProject}
+          disabled={loading || !user}
+        >
+          {loading ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : null}
+          Start Project
         </Button>
-        <Button size="lg" variant="outline" className="flex-1">
+        <Button 
+          size="lg" 
+          variant="outline" 
+          className="flex-1"
+          onClick={handleCompleteProject}
+          disabled={loading || !user}
+        >
+          {loading ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : null}
           Mark Complete
         </Button>
       </div>
     </div>
   );
+
+  if (project?.proOnly) {
+    return <ProGate>{content}</ProGate>;
+  }
+
+  return content;
 }

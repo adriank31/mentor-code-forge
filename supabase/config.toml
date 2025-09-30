@@ -1,5 +1,17 @@
 project_id = "bpwjdblhcdbwwzuzcrbx"
 
+[api]
+enabled = true
+port = 54321
+max_rows = 1000
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
 [functions.create-checkout-session]
 verify_jwt = true
 
@@ -13,4 +25,7 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.record-project-completion]
+verify_jwt = true
+
+[functions.customer-portal]
 verify_jwt = true

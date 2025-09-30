@@ -1,83 +1,143 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Target, TrendingUp, Award, Clock, Code, CheckCircle, Star, Shield } from "lucide-react";
+import { CalendarDays, Target, TrendingUp, Award, Clock, Code, CheckCircle, Star, Shield, Loader2, FlaskConical, Puzzle, FolderKanban } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { puzzles } from "@/data/puzzles";
+import { labs } from "@/data/labs";
+import { projects } from "@/data/projects";
 
-const stats = [
-  {
-    title: "Exercises Completed",
-    value: "127",
-    change: "+12 this week",
-    icon: CheckCircle,
-    color: "text-success"
-  },
-  {
-    title: "Current Streak",
-    value: "23 days",
-    change: "Personal best!",
-    icon: Target,
-    color: "text-primary"
-  },
-  {
-    title: "Time Coding",
-    value: "48.5h",
-    change: "+6.2h this week",
-    icon: Clock,
-    color: "text-info"
-  },
-  {
-    title: "Skill Level",
-    value: "Advanced",
-    change: "Level up soon",
-    icon: TrendingUp,
-    color: "text-warning"
-  }
-];
+interface ActivityItem {
+  type: "puzzle" | "lab" | "project";
+  slug: string;
+  title: string;
+  completed_at: string;
+}
 
-const securitySkills = [
-  { name: "Memory Safety", completed: 45, total: 78, progress: 58, level: "Intermediate" },
-  { name: "Concurrency", completed: 23, total: 65, progress: 35, level: "Beginner" },
-  { name: "Parsing/I-O", completed: 34, total: 52, progress: 65, level: "Intermediate" },
-  { name: "Modern C++ Practices", completed: 28, total: 48, progress: 58, level: "Intermediate" },
-  { name: "Hardening", completed: 12, total: 56, progress: 21, level: "Beginner" }
-];
-
-const recentActivity = [
-  {
-    date: "Today",
-    activities: [
-      { type: "exercise", title: "Buffer Overflow in String Copy", language: "C/C++", completed: true, time: "18 min" },
-      { type: "exercise", title: "Use-After-Free Detection", language: "C/C++", completed: true, time: "32 min" }
-    ]
-  },
-  {
-    date: "Yesterday", 
-    activities: [
-      { type: "exercise", title: "Race Condition on Shared Counter", language: "C/C++", completed: true, time: "45 min" },
-      { type: "exercise", title: "Format String Vulnerability", language: "C/C++", completed: false, time: "28 min" },
-      { type: "achievement", title: "Unlocked: Memory Master", description: "Fixed 10 memory bugs" }
-    ]
-  },
-  {
-    date: "2 days ago",
-    activities: [
-      { type: "exercise", title: "Double Free Bug", language: "C/C++", completed: true, time: "35 min" },
-      { type: "exercise", title: "Integer Overflow in Allocation", language: "C/C++", completed: true, time: "29 min" }
-    ]
-  }
-];
-
-const achievements = [
-  { title: "First Steps", description: "Completed first exercise", earned: true, date: "Nov 15, 2024" },
-  { title: "Consistency King", description: "7 day coding streak", earned: true, date: "Nov 20, 2024" },
-  { title: "Speed Demon", description: "Solve 10 exercises under 5 minutes", earned: true, date: "Nov 22, 2024" },
-  { title: "Language Explorer", description: "Try all 4 programming languages", earned: false, progress: 75 },
-  { title: "Problem Solver", description: "Complete 100 exercises", earned: false, progress: 78 },
-  { title: "Perfectionist", description: "Get 100% on 50 exercises", earned: false, progress: 42 }
-];
 
 export default function Progress() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [puzzleCount, setPuzzleCount] = useState(0);
+  const [labCount, setLabCount] = useState(0);
+  const [projectCount, setProjectCount] = useState(0);
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Fetch puzzle completions
+        const { data: puzzleData, error: puzzleError } = await supabase
+          .from("puzzle_completions")
+          .select("puzzle_slug, completed_at")
+          .eq("user_id", user.id);
+
+        if (puzzleError) throw puzzleError;
+
+        // Fetch lab completions (successful only)
+        const { data: labData, error: labError } = await supabase
+          .from("lab_completions")
+          .select("lab_slug, completed_at")
+          .eq("user_id", user.id)
+          .eq("success", true);
+
+        if (labError) throw labError;
+
+        // Fetch project completions
+        const { data: projectData, error: projectError } = await supabase
+          .from("project_completions")
+          .select("project_slug, completed_at")
+          .eq("user_id", user.id)
+          .eq("status", "completed");
+
+        if (projectError) throw projectError;
+
+        setPuzzleCount(puzzleData?.length || 0);
+        setLabCount(labData?.length || 0);
+        setProjectCount(projectData?.length || 0);
+
+        // Combine all activities for recent feed
+        const activities: ActivityItem[] = [
+          ...(puzzleData?.map(p => ({
+            type: "puzzle" as const,
+            slug: p.puzzle_slug,
+            title: puzzles.find(pz => pz.slug === p.puzzle_slug)?.title || p.puzzle_slug,
+            completed_at: p.completed_at
+          })) || []),
+          ...(labData?.map(l => ({
+            type: "lab" as const,
+            slug: l.lab_slug,
+            title: labs.find(lb => lb.slug === l.lab_slug)?.title || l.lab_slug,
+            completed_at: l.completed_at
+          })) || []),
+          ...(projectData?.map(pr => ({
+            type: "project" as const,
+            slug: pr.project_slug,
+            title: projects.find(p => p.slug === pr.project_slug)?.title || pr.project_slug,
+            completed_at: pr.completed_at
+          })) || [])
+        ];
+
+        // Sort by date and take last 20
+        activities.sort((a, b) => 
+          new Date(b.completed_at).getTime() - new Date(a.completed_at).getTime()
+        );
+        setRecentActivity(activities.slice(0, 20));
+
+      } catch (error: any) {
+        console.error("Error fetching progress:", error);
+        toast({
+          title: "Error loading progress",
+          description: "Could not load your progress data",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProgress();
+  }, [user, toast]);
+
+  const totalCompleted = puzzleCount + labCount + projectCount;
+  const puzzleTotal = puzzles.length;
+  const labTotal = labs.length;
+  const projectTotal = projects.length;
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  const getIcon = (type: string) => {
+    switch (type) {
+      case "puzzle": return Puzzle;
+      case "lab": return FlaskConical;
+      case "project": return FolderKanban;
+      default: return CheckCircle;
+    }
+  };
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
@@ -89,21 +149,55 @@ export default function Progress() {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <Card key={index}>
-            <CardContent className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card>
+          <CardContent className="p-6">
+            {loading ? (
+              <Skeleton className="h-16 w-full" />
+            ) : (
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className={`text-xs ${stat.color}`}>{stat.change}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Puzzles Completed</p>
+                  <p className="text-2xl font-bold">{puzzleCount}</p>
+                  <p className="text-xs text-muted-foreground">of {puzzleTotal}</p>
                 </div>
-                <stat.icon className={`h-8 w-8 ${stat.color}`} />
+                <Puzzle className="h-8 w-8 text-primary" />
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            {loading ? (
+              <Skeleton className="h-16 w-full" />
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Labs Completed</p>
+                  <p className="text-2xl font-bold">{labCount}</p>
+                  <p className="text-xs text-muted-foreground">of {labTotal}</p>
+                </div>
+                <FlaskConical className="h-8 w-8 text-success" />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            {loading ? (
+              <Skeleton className="h-16 w-full" />
+            ) : (
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Projects Completed</p>
+                  <p className="text-2xl font-bold">{projectCount}</p>
+                  <p className="text-xs text-muted-foreground">of {projectTotal}</p>
+                </div>
+                <FolderKanban className="h-8 w-8 text-warning" />
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Main Content */}
@@ -115,71 +209,55 @@ export default function Progress() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Security Skill Progress */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="w-5 h-5" />
-                Security Skill Progress
-              </CardTitle>
-              <CardDescription>
-                Your progress across C/C++ security skills
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {securitySkills.map((skill, index) => (
-                  <div key={index} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="font-medium">{skill.name}</span>
-                        <Badge variant="outline" className="text-xs">
-                          {skill.level}
-                        </Badge>
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {skill.completed}/{skill.total} exercises
-                      </span>
-                    </div>
-                    <ProgressBar value={skill.progress} className="h-2" />
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Weekly Goals */}
+          {/* Completion Progress */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="w-5 h-5" />
-                Weekly Goals
+                Completion Progress
               </CardTitle>
+              <CardDescription>
+                Your progress across all content types
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Complete 15 exercises</span>
-                    <span className="text-sm text-muted-foreground">12/15</span>
-                  </div>
-                  <ProgressBar value={80} className="h-2" />
+              {loading ? (
+                <div className="space-y-6">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
                 </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Practice for 8 hours</span>
-                    <span className="text-sm text-muted-foreground">6.2/8h</span>
+              ) : (
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">Puzzles</span>
+                      <span className="text-sm text-muted-foreground">
+                        {puzzleCount}/{puzzleTotal}
+                      </span>
+                    </div>
+                    <ProgressBar value={(puzzleCount / puzzleTotal) * 100} className="h-2" />
                   </div>
-                  <ProgressBar value={78} className="h-2" />
-                </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium">Try new language (C++)</span>
-                    <span className="text-sm text-muted-foreground">Started!</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">Labs</span>
+                      <span className="text-sm text-muted-foreground">
+                        {labCount}/{labTotal}
+                      </span>
+                    </div>
+                    <ProgressBar value={(labCount / labTotal) * 100} className="h-2" />
                   </div>
-                  <ProgressBar value={25} className="h-2" />
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">Projects</span>
+                      <span className="text-sm text-muted-foreground">
+                        {projectCount}/{projectTotal}
+                      </span>
+                    </div>
+                    <ProgressBar value={(projectCount / projectTotal) * 100} className="h-2" />
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -192,44 +270,42 @@ export default function Progress() {
                 Recent Activity
               </CardTitle>
               <CardDescription>
-                Your coding activity over the past few days
+                Your recent completions (last 20 items)
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-6">
-                {recentActivity.map((day, dayIndex) => (
-                  <div key={dayIndex}>
-                    <h3 className="font-semibold text-sm text-muted-foreground mb-3">{day.date}</h3>
-                    <div className="space-y-3">
-                      {day.activities.map((activity, activityIndex) => (
-                        <div key={activityIndex} className="flex items-center gap-3 p-3 rounded-lg bg-gradient-surface">
-                          {activity.type === 'exercise' ? (
-                            <>
-                              <div className={`w-2 h-2 rounded-full ${activity.completed ? 'bg-success' : 'bg-muted'}`} />
-                              <div className="flex-1">
-                                <div className="font-medium">{activity.title}</div>
-                                <div className="text-sm text-muted-foreground">
-                                  {activity.language} • {activity.time}
-                                </div>
-                              </div>
-                              {activity.completed && <CheckCircle className="w-4 h-4 text-success" />}
-                            </>
-                          ) : (
-                            <>
-                              <Award className="w-4 h-4 text-warning" />
-                              <div className="flex-1">
-                                <div className="font-medium">{activity.title}</div>
-                                <div className="text-sm text-muted-foreground">{activity.description}</div>
-                              </div>
-                              <Star className="w-4 h-4 text-warning" />
-                            </>
-                          )}
+              {loading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))}
+                </div>
+              ) : recentActivity.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p>No activity yet. Start completing puzzles, labs, and projects!</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentActivity.map((activity, index) => {
+                    const Icon = getIcon(activity.type);
+                    return (
+                      <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-gradient-surface">
+                        <Icon className="w-5 h-5 text-primary flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium truncate">{activity.title}</div>
+                          <div className="text-sm text-muted-foreground flex items-center gap-2">
+                            <Badge variant="outline" className="text-xs">
+                              {activity.type}
+                            </Badge>
+                            <span>{formatDate(activity.completed_at)}</span>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                        <CheckCircle className="w-4 h-4 text-success flex-shrink-0" />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -239,43 +315,16 @@ export default function Progress() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Award className="w-5 h-5" />
-                Achievements
+                Certificates
               </CardTitle>
               <CardDescription>
-                Unlock badges by completing challenges and milestones
+                Earn certificates by completing learning paths and achievements
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {achievements.map((achievement, index) => (
-                  <div key={index} className={`p-4 rounded-lg border transition-all duration-200 ${
-                    achievement.earned 
-                      ? 'bg-gradient-surface border-primary/20 shadow-sm' 
-                      : 'bg-muted/30 border-muted'
-                  }`}>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium">{achievement.title}</span>
-                          {achievement.earned && <CheckCircle className="w-4 h-4 text-success" />}
-                        </div>
-                        <p className="text-sm text-muted-foreground mb-2">
-                          {achievement.description}
-                        </p>
-                        {achievement.earned ? (
-                          <span className="text-xs text-success">Earned {achievement.date}</span>
-                        ) : (
-                          <div className="space-y-1">
-                            <ProgressBar value={achievement.progress} className="h-1" />
-                            <span className="text-xs text-muted-foreground">
-                              {achievement.progress}% complete
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <div className="text-center py-8 text-muted-foreground">
+                <Award className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Certificates coming soon! Keep completing content to unlock achievements.</p>
               </div>
             </CardContent>
           </Card>

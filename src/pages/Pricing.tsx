@@ -107,11 +107,8 @@ export default function Pricing() {
 
     setLoading(true);
     try {
-      const priceId = isYearly ? "price_yearly" : "price_monthly";
-      const interval = isYearly ? "year" : "month";
-      
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { priceId, interval }
+        body: { interval: isYearly ? "year" : "month" }
       });
 
       if (error) {
@@ -125,7 +122,11 @@ export default function Pricing() {
       }
       
       if (data?.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
+        toast({
+          title: "Redirecting to Stripe...",
+          description: "Opening checkout in a new tab",
+        });
       } else {
         throw new Error('No session URL returned');
       }
@@ -133,6 +134,43 @@ export default function Pricing() {
       console.error('Error creating checkout session:', err);
       toast({
         title: "Couldn't reach checkout",
+        description: "Try again or contact support.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+
+      if (error) {
+        console.error('Portal error:', error);
+        toast({
+          title: "Couldn't open portal",
+          description: "Try again or contact support.",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No portal URL returned');
+      }
+    } catch (err: unknown) {
+      console.error('Error opening customer portal:', err);
+      toast({
+        title: "Couldn't open portal",
         description: "Try again or contact support.",
         variant: "destructive"
       });
@@ -231,12 +269,21 @@ export default function Pricing() {
             </Card>
 
             {/* Pro Plan */}
-            <Card className="border-primary/50 bg-gradient-surface relative shadow-lg shadow-primary/10">
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <Badge className="bg-primary text-primary-foreground px-4 py-1">
-                  Most Popular
-                </Badge>
-              </div>
+            <Card className={`border-primary/50 bg-gradient-surface relative shadow-lg shadow-primary/10 ${profile?.is_pro ? 'ring-2 ring-primary' : ''}`}>
+              {profile?.is_pro && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-success text-success-foreground px-4 py-1">
+                    Your Plan
+                  </Badge>
+                </div>
+              )}
+              {!profile?.is_pro && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                  <Badge className="bg-primary text-primary-foreground px-4 py-1">
+                    Most Popular
+                  </Badge>
+                </div>
+              )}
               <CardHeader className="text-center pb-8">
                 <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
                   <Crown className="w-6 h-6 text-primary" />
@@ -286,14 +333,27 @@ export default function Pricing() {
                     <span>Priority support</span>
                   </li>
                 </ul>
-                <Button 
-                  className="w-full" 
-                  variant="hero" 
-                  size="lg"
-                  onClick={handleUpgrade}
-                >
-                  Upgrade to Pro
-                </Button>
+                {profile?.is_pro ? (
+                  <Button 
+                    className="w-full" 
+                    variant="outline" 
+                    size="lg"
+                    onClick={handleManageSubscription}
+                    disabled={loading}
+                  >
+                    Manage Subscription
+                  </Button>
+                ) : (
+                  <Button 
+                    className="w-full" 
+                    variant="hero" 
+                    size="lg"
+                    onClick={handleUpgrade}
+                    disabled={loading}
+                  >
+                    {loading ? "Loading..." : "Upgrade to Pro"}
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </div>
