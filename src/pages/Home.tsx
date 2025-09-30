@@ -85,7 +85,7 @@ export default function Home() {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            Learn to write secure C/C++ and practice fixing real bugs through hands-on labs with sanitizers and fuzzers.
+            Learn to write secure C/C++ and practice fixing real bugs through hands-on labs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="hero" size="lg" className="group">
@@ -209,7 +209,7 @@ export default function Home() {
                 <li><a href="#" className="hover:text-foreground transition-colors">Paths</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Practice</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Labs</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">Playground</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Pricing</a></li>
               </ul>
             </div>
             <div>
@@ -227,7 +227,7 @@ export default function Home() {
                 <li><a href="#" className="hover:text-foreground transition-colors">Privacy</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Terms</a></li>
                 <li><a href="#" className="hover:text-foreground transition-colors">Security</a></li>
-                <li><a href="#" className="hover:text-foreground transition-colors">GDPR</a></li>
+                <li><a href="#" className="hover:text-foreground transition-colors">Refunds</a></li>
               </ul>
             </div>
             <div>
