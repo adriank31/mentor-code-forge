@@ -76,16 +76,26 @@ export default function Pricing() {
         body: { priceId, interval }
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Checkout error:', error);
+        toast({
+          title: "Couldn't reach checkout",
+          description: "Try again or contact support.",
+          variant: "destructive"
+        });
+        return;
+      }
       
       if (data?.sessionUrl) {
         window.location.href = data.sessionUrl;
+      } else {
+        throw new Error('No session URL returned');
       }
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Please try again.";
-      toast({ 
-        title: "Checkout failed", 
-        description: message,
+      console.error('Error creating checkout session:', err);
+      toast({
+        title: "Couldn't reach checkout",
+        description: "Try again or contact support.",
         variant: "destructive"
       });
     }

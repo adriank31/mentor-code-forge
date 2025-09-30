@@ -20,6 +20,9 @@ serve(async (req) => {
       throw new Error('Stripe secret key not configured');
     }
 
+    // Get base URL from request origin
+    const baseUrl = req.headers.get('origin') || 'http://localhost:8080';
+
     // Create Stripe checkout session
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
@@ -31,8 +34,8 @@ serve(async (req) => {
         'mode': 'subscription',
         'line_items[0][price]': priceId === 'price_yearly' ? 'price_1QYFakeYearlyTestId' : 'price_1QYFakeMonthlyTestId',
         'line_items[0][quantity]': '1',
-        'success_url': `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
-        'cancel_url': `${req.headers.get('origin')}/pricing`,
+        'success_url': `${baseUrl}/pricing?status=success&session_id={CHECKOUT_SESSION_ID}`,
+        'cancel_url': `${baseUrl}/pricing?status=cancel`,
         'automatic_tax[enabled]': 'true',
         'customer_creation': 'always',
         'billing_address_collection': 'required',

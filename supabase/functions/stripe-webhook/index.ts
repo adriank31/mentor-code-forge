@@ -36,21 +36,25 @@ serve(async (req) => {
 
     console.log('Processing webhook event:', event.type);
 
+    // Mock in-memory store (replace with Supabase when auth is wired)
+    // For now, just log the events as they come in
+    
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
         const customerId = session.customer;
         const subscriptionId = session.subscription;
+        const customerEmail = session.customer_details?.email;
         
-        console.log('Checkout completed for customer:', customerId);
-        
-        // In a real app, you'd update the user's subscription status here
-        // For now, we'll just log it
-        console.log('Would update user subscription:', {
+        console.log('✅ Checkout completed', {
           customerId,
           subscriptionId,
+          email: customerEmail,
           status: 'active'
         });
+        
+        // TODO: When Supabase auth is wired, set isPro=true for this user
+        // Example: await supabase.from('profiles').update({ is_pro: true }).eq('email', customerEmail);
         break;
       }
       
@@ -59,14 +63,13 @@ serve(async (req) => {
         const customerId = invoice.customer;
         const subscriptionId = invoice.subscription;
         
-        console.log('Payment succeeded for customer:', customerId);
-        
-        // Update subscription status to active
-        console.log('Would ensure user is Pro:', {
+        console.log('✅ Payment succeeded', {
           customerId,
           subscriptionId,
           status: 'active'
         });
+        
+        // TODO: Ensure user isPro=true
         break;
       }
       
@@ -74,13 +77,12 @@ serve(async (req) => {
         const subscription = event.data.object;
         const customerId = subscription.customer;
         
-        console.log('Subscription deleted for customer:', customerId);
-        
-        // Downgrade user to free tier
-        console.log('Would downgrade user to free:', {
+        console.log('❌ Subscription deleted', {
           customerId,
           status: 'canceled'
         });
+        
+        // TODO: Set isPro=false for this customer
         break;
       }
       
@@ -88,10 +90,11 @@ serve(async (req) => {
         const invoice = event.data.object;
         const customerId = invoice.customer;
         
-        console.log('Payment failed for customer:', customerId);
+        console.log('⚠️ Payment failed', {
+          customerId
+        });
         
-        // Handle payment failure (e.g., send notification)
-        console.log('Would handle payment failure for:', customerId);
+        // TODO: Send notification or handle payment failure
         break;
       }
       

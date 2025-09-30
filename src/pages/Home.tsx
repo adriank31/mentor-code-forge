@@ -98,7 +98,7 @@ export default function Home() {
               variant="hero" 
               size="lg" 
               className="group"
-              onClick={() => navigate("/practice/puzzles/overflow-detection")}
+              onClick={() => navigate("/practice")}
             >
               Start Learning Secure C/C++
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -106,7 +106,7 @@ export default function Home() {
             <Button 
               variant="outline" 
               size="lg"
-              onClick={() => navigate("/catalog")}
+              onClick={() => navigate("/paths")}
             >
               Browse Curriculum
             </Button>
