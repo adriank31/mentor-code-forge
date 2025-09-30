@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress as ProgressBar } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarDays, Target, TrendingUp, Award, Clock, Code, CheckCircle, Star } from "lucide-react";
+import { CalendarDays, Target, TrendingUp, Award, Clock, Code, CheckCircle, Star, Shield } from "lucide-react";
 
 const stats = [
   {
@@ -35,34 +35,35 @@ const stats = [
   }
 ];
 
-const languages = [
-  { name: "Python", completed: 78, total: 95, progress: 82, level: "Advanced" },
-  { name: "Java", completed: 45, total: 89, progress: 51, level: "Intermediate" },
-  { name: "SQL", completed: 32, total: 67, progress: 48, level: "Intermediate" },
-  { name: "C++", completed: 12, total: 78, progress: 15, level: "Beginner" }
+const securitySkills = [
+  { name: "Memory Safety", completed: 45, total: 78, progress: 58, level: "Intermediate" },
+  { name: "Concurrency", completed: 23, total: 65, progress: 35, level: "Beginner" },
+  { name: "Parsing/I-O", completed: 34, total: 52, progress: 65, level: "Intermediate" },
+  { name: "Modern C++ Practices", completed: 28, total: 48, progress: 58, level: "Intermediate" },
+  { name: "Hardening", completed: 12, total: 56, progress: 21, level: "Beginner" }
 ];
 
 const recentActivity = [
   {
     date: "Today",
     activities: [
-      { type: "exercise", title: "Binary Search Implementation", language: "Python", completed: true, time: "14 min" },
-      { type: "exercise", title: "SQL Window Functions", language: "SQL", completed: true, time: "28 min" }
+      { type: "exercise", title: "Buffer Overflow in String Copy", language: "C/C++", completed: true, time: "18 min" },
+      { type: "exercise", title: "Use-After-Free Detection", language: "C/C++", completed: true, time: "32 min" }
     ]
   },
   {
     date: "Yesterday", 
     activities: [
-      { type: "exercise", title: "Graph Traversal", language: "Java", completed: true, time: "35 min" },
-      { type: "exercise", title: "Dynamic Programming", language: "Python", completed: false, time: "45 min" },
-      { type: "achievement", title: "Unlocked: Speed Demon", description: "Solved 10 exercises under 5 minutes" }
+      { type: "exercise", title: "Race Condition on Shared Counter", language: "C/C++", completed: true, time: "45 min" },
+      { type: "exercise", title: "Format String Vulnerability", language: "C/C++", completed: false, time: "28 min" },
+      { type: "achievement", title: "Unlocked: Memory Master", description: "Fixed 10 memory bugs" }
     ]
   },
   {
     date: "2 days ago",
     activities: [
-      { type: "exercise", title: "Memory Management", language: "C++", completed: true, time: "52 min" },
-      { type: "exercise", title: "Hash Tables", language: "Python", completed: true, time: "19 min" }
+      { type: "exercise", title: "Double Free Bug", language: "C/C++", completed: true, time: "35 min" },
+      { type: "exercise", title: "Integer Overflow in Allocation", language: "C/C++", completed: true, time: "29 min" }
     ]
   }
 ];
@@ -114,33 +115,33 @@ export default function Progress() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Language Progress */}
+          {/* Security Skill Progress */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Code className="w-5 h-5" />
-                Language Progress
+                <Shield className="w-5 h-5" />
+                Security Skill Progress
               </CardTitle>
               <CardDescription>
-                Your progress across different programming languages
+                Your progress across C/C++ security skills
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                {languages.map((language, index) => (
+                {securitySkills.map((skill, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="font-medium">{language.name}</span>
+                        <span className="font-medium">{skill.name}</span>
                         <Badge variant="outline" className="text-xs">
-                          {language.level}
+                          {skill.level}
                         </Badge>
                       </div>
                       <span className="text-sm text-muted-foreground">
-                        {language.completed}/{language.total} exercises
+                        {skill.completed}/{skill.total} exercises
                       </span>
                     </div>
-                    <ProgressBar value={language.progress} className="h-2" />
+                    <ProgressBar value={skill.progress} className="h-2" />
                   </div>
                 ))}
               </div>

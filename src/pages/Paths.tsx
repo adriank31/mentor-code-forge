@@ -3,9 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Shield, Lock, Zap, FileText, Target, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { paths as pathsData } from "@/data/paths";
 
-const paths = [
+const pathsDisplay = [
   {
+    slug: "foundations-safe-basics",
     title: "Foundations: Safe Basics",
     icon: Shield,
     description: "Learn the fundamentals of secure C/C++ programming—safe pointers, arrays, strings, and basic memory management.",
@@ -18,6 +21,7 @@ const paths = [
     color: "text-accent"
   },
   {
+    slug: "memory-and-lifetimes",
     title: "Memory & Lifetimes",
     icon: Lock,
     description: "Master RAII, smart pointers, ownership models, and how to prevent use-after-free, double-free, and memory leaks.",
@@ -30,6 +34,7 @@ const paths = [
     color: "text-primary"
   },
   {
+    slug: "concurrency-and-race-freedom",
     title: "Concurrency & Race Freedom",
     icon: Zap,
     description: "Understand threads, atomics, mutexes, and how to detect and fix data races using TSan and modern C++ concurrency tools.",
@@ -42,6 +47,7 @@ const paths = [
     color: "text-warning"
   },
   {
+    slug: "file-parsing-and-robust-io",
     title: "Files, Parsing & Robust I/O",
     icon: FileText,
     description: "Handle partial reads/writes, parse untrusted input safely, and prevent buffer overflows in I/O operations.",
@@ -54,6 +60,7 @@ const paths = [
     color: "text-chart-2"
   },
   {
+    slug: "hardening-and-fuzzing",
     title: "Hardening & Fuzzing",
     icon: Target,
     description: "Advanced track: exploit prevention, fuzzing techniques, sanitizer mastery, and building security into your development workflow.",
@@ -68,6 +75,8 @@ const paths = [
 ];
 
 export default function Paths() {
+  const navigate = useNavigate();
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
@@ -80,7 +89,7 @@ export default function Paths() {
 
       {/* Paths Grid */}
       <div className="grid grid-cols-1 gap-6">
-        {paths.map((path, index) => {
+        {pathsDisplay.map((path, index) => {
           const Icon = path.icon;
           return (
             <Card key={index} className="border-border/50 hover:shadow-lg transition-all duration-200 hover:-translate-y-1">
@@ -138,7 +147,11 @@ export default function Paths() {
                   </div>
 
                   {/* Action Button */}
-                  <Button className="w-full" variant={path.progress > 0 ? "default" : "hero"}>
+                  <Button 
+                    className="w-full" 
+                    variant={path.progress > 0 ? "default" : "hero"}
+                    onClick={() => navigate(`/paths/${path.slug}`)}
+                  >
                     {path.progress > 0 ? "Continue Learning" : "Start Path"}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
@@ -156,7 +169,7 @@ export default function Paths() {
           <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
             Take our quick assessment to find the best learning path for your current skill level and goals.
           </p>
-          <Button variant="hero" size="lg">
+          <Button variant="hero" size="lg" onClick={() => navigate("/assessment")}>
             Take Assessment
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>

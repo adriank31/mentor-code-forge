@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { ArrowRight, Code, Shield, Share, Zap, TrendingUp, BookOpen, Users, Sparkles, Clock, Target } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const stats = [
   { label: "Bugs Fixed", value: "127K+" },
@@ -45,6 +46,7 @@ const features = [
 
 const latestPractice = [
   {
+    slug: "buffer-overflow-strcpy",
     title: "Buffer Overflow in String Copy",
     difficulty: "beginner" as const,
     language: "C/C++",
@@ -52,6 +54,7 @@ const latestPractice = [
     estimatedTime: "20 min"
   },
   {
+    slug: "use-after-free-vulnerability",
     title: "Use-After-Free Detection",
     difficulty: "intermediate" as const,
     language: "C/C++",
@@ -59,6 +62,7 @@ const latestPractice = [
     estimatedTime: "30 min"
   },
   {
+    slug: "race-condition-on-shared-counter",
     title: "Race Condition on Shared Counter",
     difficulty: "advanced" as const,
     language: "C/C++",
@@ -68,6 +72,8 @@ const latestPractice = [
 ];
 
 export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="space-y-16 pb-16">
       {/* Hero Section */}
@@ -88,11 +94,20 @@ export default function Home() {
             Learn to write secure C/C++ and practice fixing real bugs through hands-on labs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="lg" className="group">
+            <Button 
+              variant="hero" 
+              size="lg" 
+              className="group"
+              onClick={() => navigate("/paths/foundations-safe-basics")}
+            >
               Start Learning Secure C/C++
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline" size="lg">
+            <Button 
+              variant="outline" 
+              size="lg"
+              onClick={() => navigate("/catalog")}
+            >
               Browse Curriculum
             </Button>
           </div>
@@ -157,7 +172,7 @@ export default function Home() {
               <h2 className="text-3xl font-bold mb-2">Latest Labs</h2>
               <p className="text-muted-foreground">Try these popular secure C/C++ labs from our community</p>
             </div>
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => navigate("/labs")}>
               View All
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
@@ -165,7 +180,11 @@ export default function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {latestPractice.map((exercise, index) => (
-              <Card key={index} className="border-border/50 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group">
+              <Card 
+                key={index} 
+                className="border-border/50 hover:shadow-lg transition-all duration-200 hover:-translate-y-1 cursor-pointer group"
+                onClick={() => navigate(`/labs/${exercise.slug}`)}
+              >
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">

@@ -34,7 +34,7 @@ int main() {
 }`
   },
   {
-    slug: "use-after-free",
+    slug: "use-after-free-vulnerability",
     title: "Use-After-Free Vulnerability",
     summary: "Detect and fix a dangling pointer bug after memory deallocation.",
     difficulty: "intermediate",
@@ -61,7 +61,7 @@ int main() {
 }`
   },
   {
-    slug: "race-condition-counter",
+    slug: "race-condition-on-shared-counter",
     title: "Race Condition on Shared Counter",
     summary: "Fix non-atomic increment operations causing race conditions.",
     difficulty: "advanced",

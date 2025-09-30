@@ -5,9 +5,25 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Filter, Clock, Users, Shield, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { courses as coursesData } from "@/data/courses";
 
-const courses = [
+const coursesDisplay = [
   {
+    slug: "foundations-safe-basics",
+    title: "Secure Coding Foundations",
+    description: "Start your journey: safe pointers, arrays, strings, and basic memory management in C/C++.",
+    category: "Secure Systems Track",
+    difficulty: "Beginner",
+    duration: "4 hours",
+    lessons: 18,
+    labs: 9,
+    price: "Free",
+    rating: 4.8,
+    students: 5240
+  },
+  {
+    slug: "memory-and-lifetimes",
     title: "Secure Memory Management",
     description: "Comprehensive guide to preventing memory bugs in C/C++: buffer overflows, UAF, double-free, and more.",
     category: "Secure Systems Track",
@@ -20,6 +36,7 @@ const courses = [
     students: 3420
   },
   {
+    slug: "concurrency-and-race-freedom",
     title: "Race Condition Masterclass",
     description: "Deep dive into concurrency bugs, atomics, mutexes, and thread safety with hands-on TSan labs.",
     category: "Secure Systems Track",
@@ -32,6 +49,20 @@ const courses = [
     students: 1856
   },
   {
+    slug: "file-parsing-and-robust-io",
+    title: "Secure I/O & Parsing",
+    description: "Prevent buffer overflows, format string bugs, and injection attacks in input handling.",
+    category: "Secure Systems Track",
+    difficulty: "Intermediate",
+    duration: "5 hours",
+    lessons: 20,
+    labs: 10,
+    price: "Free",
+    rating: 4.6,
+    students: 4120
+  },
+  {
+    slug: "hardening-and-fuzzing",
     title: "Fuzzing for Security",
     description: "Learn to find edge cases and vulnerabilities using LibFuzzer, AFL++, and custom fuzz harnesses.",
     category: "Secure Systems Track",
@@ -42,75 +73,16 @@ const courses = [
     price: "Pro",
     rating: 4.7,
     students: 892
-  },
-  {
-    title: "Modern C++ Safety Patterns",
-    description: "Master RAII, smart pointers, move semantics, and C++17/20 features for memory-safe code.",
-    category: "Secure Systems Track",
-    difficulty: "Intermediate",
-    duration: "7 hours",
-    lessons: 28,
-    labs: 14,
-    price: "Free",
-    rating: 4.8,
-    students: 2340
-  },
-  {
-    title: "Secure I/O & Parsing",
-    description: "Prevent buffer overflows, format string bugs, and injection attacks in input handling.",
-    category: "Secure Systems Track",
-    difficulty: "Beginner",
-    duration: "5 hours",
-    lessons: 20,
-    labs: 10,
-    price: "Free",
-    rating: 4.6,
-    students: 4120
-  },
-  {
-    title: "Exploit Prevention Techniques",
-    description: "Learn stack canaries, ASLR, DEP, and modern exploit mitigation strategies.",
-    category: "Secure Systems Track",
-    difficulty: "Expert",
-    duration: "12 hours",
-    lessons: 40,
-    labs: 20,
-    price: "Pro",
-    rating: 4.9,
-    students: 543
-  },
-  {
-    title: "Sanitizer Deep Dive",
-    description: "Master ASan, TSan, UBSan, MSan—detect and fix undefined behavior and memory bugs.",
-    category: "Secure Systems Track",
-    difficulty: "Intermediate",
-    duration: "6 hours",
-    lessons: 25,
-    labs: 13,
-    price: "Free",
-    rating: 4.7,
-    students: 1890
-  },
-  {
-    title: "Secure Coding Foundations",
-    description: "Start your journey: safe pointers, arrays, strings, and basic memory management in C/C++.",
-    category: "Secure Systems Track",
-    difficulty: "Beginner",
-    duration: "4 hours",
-    lessons: 18,
-    labs: 9,
-    price: "Free",
-    rating: 4.8,
-    students: 5240
-  },
+  }
 ];
 
 export default function Catalog() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
   const [selectedPrice, setSelectedPrice] = useState("all");
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = coursesDisplay.filter(course => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          course.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDifficulty = selectedDifficulty === "all" || course.difficulty === selectedDifficulty;
@@ -226,7 +198,11 @@ export default function Catalog() {
                   {course.difficulty}
                 </Badge>
 
-                <Button className="w-full" variant="outline">
+                <Button 
+                  className="w-full" 
+                  variant="outline"
+                  onClick={() => navigate(`/courses/${course.slug}`)}
+                >
                   View Course
                 </Button>
               </div>

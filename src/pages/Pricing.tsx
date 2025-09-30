@@ -15,11 +15,11 @@ const faqItems = [
   },
   {
     question: "Can I get a refund?",
-    answer: "No — we don't offer refunds."
+    answer: "Sorry for the inconvenience but we don't offer refunds. Please contact our support if you have any problems."
   },
   {
     question: "Do you offer student discounts?",
-    answer: "15% off the Pro plan with a valid .edu email."
+    answer: "We offer 15% off the Pro plan for students with valid .edu emails. Contact our support to verify."
   },
   {
     question: "Can I cancel anytime?",

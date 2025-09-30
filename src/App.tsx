@@ -18,6 +18,7 @@ import Progress from "./pages/Progress";
 import Docs from "./pages/Docs";
 import CppLabPlayground from "./pages/playground/CppLab";
 import NotFound from "./pages/NotFound";
+import Assessment from "./pages/Assessment";
 
 const App = () => (
   <ThemeProvider defaultTheme="dark">
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/progress" element={<Progress />} />
             <Route path="/docs" element={<Docs />} />
             <Route path="/playground/cpp" element={<CppLabPlayground />} />
+            <Route path="/assessment" element={<Assessment />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>
