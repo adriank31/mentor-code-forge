@@ -3,22 +3,30 @@ project_id = "bpwjdblhcdbwwzuzcrbx"
 [api]
 enabled = true
 port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
 port = 54322
+shadow_port = 54320
+major_version = 15
 
-[studio]
+[db.pooler]
+enabled = false
+port = 54329
+pool_mode = "transaction"
+default_pool_size = 20
+max_client_conn = 100
+
+[auth]
 enabled = true
 port = 54323
 
 [functions.create-checkout-session]
 verify_jwt = true
 
-[functions.stripe-webhook]
-verify_jwt = false
-
-[functions.record-puzzle-completion]
+[functions.customer-portal]
 verify_jwt = true
 
 [functions.record-lab-completion]
@@ -27,5 +35,8 @@ verify_jwt = true
 [functions.record-project-completion]
 verify_jwt = true
 
-[functions.customer-portal]
+[functions.record-puzzle-completion]
+verify_jwt = true
+
+[functions.run-code]
 verify_jwt = true
