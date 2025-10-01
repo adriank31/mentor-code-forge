@@ -99,8 +99,16 @@ export default function Paths() {
                     <Icon className={`w-7 h-7 ${path.color}`} />
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                      <CardTitle className="text-2xl">{path.title}</CardTitle>
+                   <div className="flex items-start justify-between mb-2">
+                      <CardTitle className="text-2xl flex items-center gap-2">
+                        {path.title}
+                        {pathsData.find(p => p.slug === path.slug)?.proOnly && (
+                          <Badge variant="outline" className="gap-1">
+                            <Lock className="w-3 h-3" />
+                            Pro
+                          </Badge>
+                        )}
+                      </CardTitle>
                       <Badge variant="outline" className="ml-2">
                         {path.difficulty}
                       </Badge>
