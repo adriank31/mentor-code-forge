@@ -280,15 +280,16 @@ export default function PathLesson() {
           {/* Lesson Content with Better Typography */}
           <div className="prose prose-lg prose-invert max-w-none 
             prose-headings:font-bold prose-headings:tracking-tight
-            prose-h1:text-4xl prose-h1:mb-6 prose-h1:leading-tight
-            prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:leading-snug
-            prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-            prose-p:text-base prose-p:leading-relaxed prose-p:mb-6 prose-p:text-foreground/90
-            prose-li:text-base prose-li:leading-relaxed prose-li:mb-2
-            prose-ul:my-6 prose-ol:my-6
-            prose-code:text-sm prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-primary
-            prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:p-4 prose-pre:rounded-lg
-            prose-strong:text-foreground prose-strong:font-semibold">
+            prose-h1:text-4xl prose-h1:mb-8 prose-h1:mt-0 prose-h1:leading-tight prose-h1:pb-4 prose-h1:border-b prose-h1:border-border/30
+            prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:leading-snug prose-h2:pt-8
+            prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-semibold
+            prose-p:text-lg prose-p:leading-loose prose-p:mb-8 prose-p:text-foreground/95
+            prose-li:text-lg prose-li:leading-loose prose-li:mb-3 prose-li:text-foreground/90
+            prose-ul:my-8 prose-ul:space-y-2 prose-ol:my-8 prose-ol:space-y-2
+            prose-code:text-base prose-code:bg-muted/80 prose-code:px-2.5 prose-code:py-1 prose-code:rounded prose-code:text-primary prose-code:font-mono
+            prose-pre:bg-muted/50 prose-pre:border-2 prose-pre:border-border/50 prose-pre:p-6 prose-pre:rounded-xl prose-pre:my-8
+            prose-strong:text-foreground prose-strong:font-bold
+            prose-blockquote:border-l-4 prose-blockquote:border-primary/50 prose-blockquote:pl-6 prose-blockquote:my-8 prose-blockquote:italic">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {lesson.content.markdown || ''}
             </ReactMarkdown>
@@ -386,15 +387,16 @@ export default function PathLesson() {
     return (
       <div className="animate-fade-in prose prose-lg prose-invert max-w-none 
         prose-headings:font-bold prose-headings:tracking-tight
-        prose-h1:text-4xl prose-h1:mb-6 prose-h1:leading-tight
-        prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:leading-snug
-        prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3
-        prose-p:text-base prose-p:leading-relaxed prose-p:mb-6 prose-p:text-foreground/90
-        prose-li:text-base prose-li:leading-relaxed prose-li:mb-2
-        prose-ul:my-6 prose-ol:my-6
-        prose-code:text-sm prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-code:text-primary
-        prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:p-4 prose-pre:rounded-lg
-        prose-strong:text-foreground prose-strong:font-semibold">
+        prose-h1:text-4xl prose-h1:mb-8 prose-h1:mt-0 prose-h1:leading-tight prose-h1:pb-4 prose-h1:border-b prose-h1:border-border/30
+        prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6 prose-h2:leading-snug prose-h2:pt-8
+        prose-h3:text-xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:font-semibold
+        prose-p:text-lg prose-p:leading-loose prose-p:mb-8 prose-p:text-foreground/95
+        prose-li:text-lg prose-li:leading-loose prose-li:mb-3 prose-li:text-foreground/90
+        prose-ul:my-8 prose-ul:space-y-2 prose-ol:my-8 prose-ol:space-y-2
+        prose-code:text-base prose-code:bg-muted/80 prose-code:px-2.5 prose-code:py-1 prose-code:rounded prose-code:text-primary prose-code:font-mono
+        prose-pre:bg-muted/50 prose-pre:border-2 prose-pre:border-border/50 prose-pre:p-6 prose-pre:rounded-xl prose-pre:my-8
+        prose-strong:text-foreground prose-strong:font-bold
+        prose-blockquote:border-l-4 prose-blockquote:border-primary/50 prose-blockquote:pl-6 prose-blockquote:my-8 prose-blockquote:italic">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {lesson.content?.markdown || ''}
         </ReactMarkdown>

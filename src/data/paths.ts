@@ -14,7 +14,7 @@ export const paths: Path[] = [
     title: "Foundations: Safe Basics",
     summary: "Learn the fundamentals of writing secure C/C++ code from the ground up.",
     difficulty: "beginner",
-    modules: 8,
+    modules: 3,
     estMinutes: 240,
     proOnly: false
   },
