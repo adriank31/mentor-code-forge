@@ -7,6 +7,12 @@ export interface Lab {
   estMinutes: number;
   proOnly: boolean;
   starterCode?: string;
+  detailedInstructions?: string;
+  objectives?: string[];
+  hints?: string[];
+  solutionCode?: string;
+  testCriteria?: string[];
+  expectedBehavior?: string;
 }
 
 export const labs: Lab[] = [
@@ -31,7 +37,49 @@ int main() {
   copy_string(buf, "This is way too long!");
   printf("%s\\n", buf);
   return 0;
-}`
+}`,
+    detailedInstructions: `This lab demonstrates a classic buffer overflow vulnerability using the unsafe strcpy function.
+
+The vulnerable code allocates a 10-byte buffer but attempts to copy a much longer string into it. This causes memory corruption beyond the buffer boundaries, potentially overwriting adjacent memory.
+
+Your task is to identify the vulnerability, understand its impact, and implement a secure fix using bounds-checked string operations.`,
+    objectives: [
+      "Identify the unsafe strcpy usage and understand why it's dangerous",
+      "Understand how buffer overflows can lead to memory corruption",
+      "Replace strcpy with a safe alternative like strncpy or snprintf",
+      "Implement proper bounds checking to prevent buffer overflows",
+      "Test your fix to ensure it handles both normal and edge cases"
+    ],
+    hints: [
+      "The strcpy function doesn't check if the destination buffer is large enough",
+      "Consider using strncpy with the buffer size as the third parameter",
+      "Remember to null-terminate the string after using strncpy",
+      "Alternatively, you can use snprintf for safer string formatting",
+      "Always validate input length before copying to fixed-size buffers"
+    ],
+    solutionCode: `#include <stdio.h>
+#include <string.h>
+
+void copy_string(char* dest, const char* src, size_t dest_size) {
+  // Safe: bounds-checked copy
+  strncpy(dest, src, dest_size - 1);
+  dest[dest_size - 1] = '\\0'; // Ensure null termination
+}
+
+int main() {
+  char buf[10];
+  copy_string(buf, "This is way too long!", sizeof(buf));
+  printf("%s\\n", buf);
+  return 0;
+}`,
+    testCriteria: [
+      "Code compiles without warnings",
+      "No buffer overflow occurs with long input strings",
+      "Strings are properly null-terminated",
+      "Function accepts buffer size as a parameter",
+      "Handles edge cases like empty strings and maximum-length strings"
+    ],
+    expectedBehavior: "The program should safely truncate strings that are too long for the buffer, preventing memory corruption while maintaining proper null termination."
   },
   {
     slug: "use-after-free",
