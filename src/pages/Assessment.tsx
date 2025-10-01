@@ -5,10 +5,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ArrowRight, CheckCircle, Award, Target } from "lucide-react";
+import { ArrowLeft, ChevronRight, Award, Target, Code, Wrench, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { paths } from "@/data/paths";
 import { projects } from "@/data/projects";
+import { labs } from "@/data/labs";
+import { puzzles } from "@/data/puzzles";
+import { DifficultyBadge } from "@/components/DifficultyBadge";
 
 interface Question {
   id: string;
@@ -23,56 +26,56 @@ interface Question {
 const questions: Question[] = [
   {
     id: "experience",
-    question: "What's your experience level with C/C++ programming?",
+    question: "What's your overall experience with C/C++ programming?",
     options: [
-      { value: "beginner", label: "Beginner - Just starting with C/C++", score: 0 },
-      { value: "intermediate", label: "Intermediate - Comfortable with basics, some projects", score: 5 },
-      { value: "advanced", label: "Advanced - Professional experience, complex projects", score: 10 }
+      { value: "beginner", label: "Beginner - New to C/C++, learning syntax and basics", score: 1 },
+      { value: "intermediate", label: "Intermediate - Comfortable with basics, built some programs", score: 5 },
+      { value: "advanced", label: "Advanced - Professional experience with complex systems", score: 10 }
     ]
   },
   {
     id: "memory",
     question: "How comfortable are you with manual memory management?",
     options: [
-      { value: "unfamiliar", label: "Unfamiliar - Haven't used malloc/free much", score: 0 },
-      { value: "basic", label: "Basic - Can allocate/free but unsure about edge cases", score: 3 },
-      { value: "confident", label: "Confident - Understand ownership and lifetimes well", score: 8 }
+      { value: "novice", label: "Novice - Still learning malloc/free and pointers", score: 1 },
+      { value: "familiar", label: "Familiar - Can manage memory but occasionally make mistakes", score: 4 },
+      { value: "expert", label: "Expert - Deeply understand ownership, lifetimes, and edge cases", score: 9 }
     ]
   },
   {
-    id: "pointers",
-    question: "How well do you understand pointers and references?",
+    id: "debugging",
+    question: "What's your experience with debugging and security tools?",
     options: [
-      { value: "learning", label: "Still learning - Often confused by pointer syntax", score: 0 },
-      { value: "comfortable", label: "Comfortable - Can work with pointers and references", score: 4 },
-      { value: "expert", label: "Expert - Deep understanding including function pointers", score: 9 }
+      { value: "basic", label: "Basic - Mainly use print statements for debugging", score: 1 },
+      { value: "tools", label: "Intermediate - Used gdb, valgrind, or similar tools", score: 5 },
+      { value: "advanced", label: "Advanced - Proficient with sanitizers, fuzzers, and security analysis", score: 10 }
     ]
   },
   {
     id: "concurrency",
     question: "What's your experience with multithreading and concurrency?",
     options: [
-      { value: "none", label: "None - Haven't worked with threads", score: 0 },
-      { value: "some", label: "Some - Basic thread creation and joining", score: 2 },
-      { value: "experienced", label: "Experienced - Understand race conditions and synchronization", score: 10 }
+      { value: "none", label: "None - Haven't worked with threads or parallel programming", score: 0 },
+      { value: "basic", label: "Basic - Created threads but unsure about synchronization", score: 4 },
+      { value: "experienced", label: "Experienced - Understand race conditions, atomics, and locks", score: 10 }
     ]
   },
   {
     id: "security",
     question: "How familiar are you with security vulnerabilities in C/C++?",
     options: [
-      { value: "minimal", label: "Minimal - Heard of buffer overflows but never tested", score: 0 },
-      { value: "moderate", label: "Moderate - Know common vulnerabilities and some mitigations", score: 5 },
-      { value: "strong", label: "Strong - Experience with fuzzing and security testing", score: 10 }
+      { value: "aware", label: "Aware - Heard about buffer overflows and basic issues", score: 1 },
+      { value: "knowledgeable", label: "Knowledgeable - Know common vulnerabilities and some mitigations", score: 5 },
+      { value: "expert", label: "Expert - Experience finding, exploiting, and fixing security bugs", score: 10 }
     ]
   },
   {
-    id: "debugging",
-    question: "How comfortable are you with debugging tools (gdb, valgrind, sanitizers)?",
+    id: "goals",
+    question: "What's your primary learning goal?",
     options: [
-      { value: "novice", label: "Novice - Mostly use printf debugging", score: 0 },
-      { value: "familiar", label: "Familiar - Used gdb and valgrind a few times", score: 4 },
-      { value: "proficient", label: "Proficient - Regularly use sanitizers and debugging tools", score: 8 }
+      { value: "fundamentals", label: "Master the fundamentals and write safe code", score: 0 },
+      { value: "realworld", label: "Build real-world systems and tackle practical problems", score: 5 },
+      { value: "advanced", label: "Master advanced topics like concurrency and security", score: 10 }
     ]
   }
 ];
@@ -114,44 +117,100 @@ export default function Assessment() {
     const maxScore = questions.reduce((sum, q) => sum + Math.max(...q.options.map(o => o.score)), 0);
     const percentage = (score / maxScore) * 100;
 
-    // Recommend path based on score
-    let recommendedPath;
-    let recommendedProject;
+    // Determine skill level
+    const level = percentage < 35 ? "Beginner" : percentage < 65 ? "Intermediate" : "Advanced";
 
-    if (percentage < 30) {
-      // Beginner level
+    // Recommend one path
+    let recommendedPath;
+    if (percentage < 35) {
       recommendedPath = paths.find(p => p.slug === "foundations-safe-basics");
-      recommendedProject = projects.find(p => p.difficulty === "beginner");
-    } else if (percentage < 60) {
-      // Intermediate level
-      const intermediateOptions = ["file-parsing-and-robust-io", "memory-and-lifetimes"];
-      const securityScore = questions.find(q => q.id === "security")?.options.find(o => o.value === answers.security)?.score || 0;
-      const slug = securityScore > 3 ? "memory-and-lifetimes" : "file-parsing-and-robust-io";
-      recommendedPath = paths.find(p => p.slug === slug);
-      recommendedProject = projects.find(p => p.difficulty === "intermediate");
+    } else if (percentage < 65) {
+      const securityAnswer = answers.security || "";
+      const securityScore = questions.find(q => q.id === "security")?.options.find(o => o.value === securityAnswer)?.score || 0;
+      const targetSlug = securityScore > 5 ? "memory-and-lifetimes" : "file-parsing-and-robust-io";
+      recommendedPath = paths.find(p => p.slug === targetSlug);
     } else {
-      // Advanced level
-      const concurrencyScore = questions.find(q => q.id === "concurrency")?.options.find(o => o.value === answers.concurrency)?.score || 0;
-      const securityScore = questions.find(q => q.id === "security")?.options.find(o => o.value === answers.security)?.score || 0;
+      const concurrencyAnswer = answers.concurrency || "";
+      const securityAnswer = answers.security || "";
+      const concurrencyScore = questions.find(q => q.id === "concurrency")?.options.find(o => o.value === concurrencyAnswer)?.score || 0;
+      const securityScore = questions.find(q => q.id === "security")?.options.find(o => o.value === securityAnswer)?.score || 0;
       
-      let slug = "hardening-and-fuzzing";
       if (concurrencyScore >= 8) {
-        slug = "concurrency-and-race-freedom";
-      } else if (securityScore < 8) {
-        slug = "memory-and-lifetimes";
+        recommendedPath = paths.find(p => p.slug === "concurrency-and-race-freedom");
+      } else if (securityScore >= 8) {
+        recommendedPath = paths.find(p => p.slug === "hardening-and-fuzzing");
+      } else {
+        recommendedPath = paths.find(p => p.slug === "memory-and-lifetimes");
       }
+    }
+
+    // Recommend one lab based on level
+    let recommendedLab;
+    if (percentage < 35) {
+      recommendedLab = labs.find(l => l.slug === "buffer-overflow-strcpy");
+    } else if (percentage < 65) {
+      const securityAnswer = answers.security || "";
+      const securityInterest = questions.find(q => q.id === "security")?.options.find(o => o.value === securityAnswer)?.score || 0;
+      const targetLabSlug = securityInterest > 5 ? "use-after-free" : "null-pointer-deref";
+      recommendedLab = labs.find(l => l.slug === targetLabSlug);
+    } else {
+      const concurrencyAnswer = answers.concurrency || "";
+      const concurrencyInterest = questions.find(q => q.id === "concurrency")?.options.find(o => o.value === concurrencyAnswer)?.score || 0;
+      const advancedLabSlug = concurrencyInterest >= 8 ? "race-condition-counter" : "integer-overflow-allocation";
+      recommendedLab = labs.find(l => l.slug === advancedLabSlug);
+    }
+
+    // Recommend one project based on level and interests
+    let recommendedProject;
+    if (percentage < 35) {
+      recommendedProject = projects.find(p => p.difficulty === "intermediate" && !p.proOnly);
+    } else if (percentage < 65) {
+      const goalsAnswer = answers.goals || "";
+      recommendedProject = projects.find(p => 
+        p.difficulty === "intermediate" && 
+        (goalsAnswer === "realworld" ? p.role === "Embedded" : p.role === "Firmware")
+      ) || projects.find(p => p.difficulty === "intermediate");
+    } else {
+      const concurrencyAnswer = answers.concurrency || "";
+      const securityAnswer = answers.security || "";
+      const concurrencyInterest = questions.find(q => q.id === "concurrency")?.options.find(o => o.value === concurrencyAnswer)?.score || 0;
+      const securityInterest = questions.find(q => q.id === "security")?.options.find(o => o.value === securityAnswer)?.score || 0;
       
-      recommendedPath = paths.find(p => p.slug === slug);
-      recommendedProject = projects.find(p => p.difficulty === "advanced");
+      if (concurrencyInterest >= 8) {
+        recommendedProject = projects.find(p => p.slug === "atomic-waker");
+      } else if (securityInterest >= 8) {
+        recommendedProject = projects.find(p => p.slug === "privilege-escalation-sim");
+      } else {
+        recommendedProject = projects.find(p => p.difficulty === "advanced" && p.proOnly);
+      }
+    }
+
+    // Recommend one puzzle based on category preference
+    let recommendedPuzzle;
+    const securityAnswerPuzzle = answers.security || "";
+    const memoryAnswerPuzzle = answers.memory || "";
+    const securityInterest = questions.find(q => q.id === "security")?.options.find(o => o.value === securityAnswerPuzzle)?.score || 0;
+    const memoryInterest = questions.find(q => q.id === "memory")?.options.find(o => o.value === memoryAnswerPuzzle)?.score || 0;
+    
+    if (percentage < 35) {
+      recommendedPuzzle = puzzles.find(p => p.difficulty === "beginner");
+    } else if (securityInterest > 7) {
+      recommendedPuzzle = puzzles.find(p => p.category === "Cybersecurity Engineering" && p.difficulty !== "advanced");
+    } else if (memoryInterest > 7) {
+      recommendedPuzzle = puzzles.find(p => p.category === "Systems Programming" && p.difficulty === "intermediate");
+    } else {
+      recommendedPuzzle = puzzles.find(p => p.difficulty === "intermediate" && p.category === "Embedded Systems");
     }
 
     return {
       score,
       maxScore,
       percentage,
+      level,
       path: recommendedPath,
+      lab: recommendedLab,
       project: recommendedProject,
-      level: percentage < 30 ? "Beginner" : percentage < 60 ? "Intermediate" : "Advanced"
+      puzzle: recommendedPuzzle
     };
   };
 
@@ -163,7 +222,7 @@ export default function Assessment() {
     const results = getRecommendations();
     
     return (
-      <div className="p-4 md:p-6 space-y-6 max-w-4xl mx-auto">
+      <div className="p-4 md:p-6 space-y-6 max-w-5xl mx-auto">
         <Button variant="ghost" onClick={() => navigate("/paths")}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Paths
@@ -182,91 +241,124 @@ export default function Assessment() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="text-center">
+            <div className="text-center pb-6 border-b">
               <div className="text-4xl font-bold text-primary mb-2">
                 {results.score} / {results.maxScore}
               </div>
               <p className="text-muted-foreground">Total Score</p>
             </div>
 
-            <div className="space-y-6 pt-6 border-t">
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <Target className="w-5 h-5 text-primary" />
-                  <h3 className="text-xl font-semibold">Recommended Learning Path</h3>
-                </div>
-                {results.path && (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">{results.path.title}</CardTitle>
-                        <Badge variant="outline">{results.path.difficulty}</Badge>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Learning Path */}
+              {results.path && (
+                <Card className="border-2">
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <BookOpen className="w-5 h-5 text-primary" />
+                      <CardTitle className="text-lg">Recommended Learning Path</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-xl mb-2">{results.path.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{results.path.summary}</p>
+                      <div className="flex items-center gap-2 mb-4">
+                        <DifficultyBadge difficulty={results.path.difficulty} />
+                        <Badge variant="outline" className="text-xs">{results.path.modules} modules</Badge>
+                        <Badge variant="outline" className="text-xs">{results.path.estMinutes} min</Badge>
                       </div>
-                      <CardDescription>{results.path.summary}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Modules:</span>
-                          <span className="font-semibold ml-2">{results.path.modules}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Est. Time:</span>
-                          <span className="font-semibold ml-2">{results.path.estMinutes} min</span>
-                        </div>
-                      </div>
-                      <Button 
-                        className="w-full" 
-                        onClick={() => navigate(`/paths/${results.path.slug}`)}
-                      >
-                        Start This Path
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+                    </div>
+                    <Button className="w-full" onClick={() => navigate(`/paths/${results.path.slug}`)}>
+                      <Target className="w-4 h-4 mr-2" />
+                      Start This Path
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
 
-              <div>
-                <div className="flex items-center gap-2 mb-4">
-                  <CheckCircle className="w-5 h-5 text-primary" />
-                  <h3 className="text-xl font-semibold">Recommended Project</h3>
-                </div>
-                {results.project && (
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">{results.project.title}</CardTitle>
-                        <Badge variant="outline">{results.project.difficulty}</Badge>
+              {/* Lab */}
+              {results.lab && (
+                <Card className="border-2">
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Wrench className="w-5 h-5 text-primary" />
+                      <CardTitle className="text-lg">Recommended Lab</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-xl mb-2">{results.lab.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{results.lab.summary}</p>
+                      <div className="flex items-center gap-2 mb-4">
+                        <DifficultyBadge difficulty={results.lab.difficulty} />
+                        <Badge variant="secondary" className="text-xs">{results.lab.bugType}</Badge>
+                        <Badge variant="outline" className="text-xs">{results.lab.estMinutes} min</Badge>
                       </div>
-                      <CardDescription>{results.project.summary}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Role:</span>
-                          <span className="font-semibold ml-2">{results.project.role}</span>
-                        </div>
-                        <div className="text-sm">
-                          <span className="text-muted-foreground">Est. Time:</span>
-                          <span className="font-semibold ml-2">{results.project.estMinutes} min</span>
-                        </div>
+                    </div>
+                    <Button className="w-full" variant="outline" onClick={() => navigate(`/labs/${results.lab.slug}`)}>
+                      Start Lab
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Project */}
+              {results.project && (
+                <Card className="border-2">
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Code className="w-5 h-5 text-primary" />
+                      <CardTitle className="text-lg">Recommended Project</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-xl mb-2">{results.project.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{results.project.summary}</p>
+                      <div className="flex items-center gap-2 mb-4">
+                        <DifficultyBadge difficulty={results.project.difficulty} />
+                        <Badge variant="secondary" className="text-xs">{results.project.role}</Badge>
+                        <Badge variant="outline" className="text-xs">{results.project.estMinutes} min</Badge>
                       </div>
-                      <Button 
-                        className="w-full" 
-                        variant="outline"
-                        onClick={() => navigate(`/projects/${results.project.slug}`)}
-                      >
-                        View Project
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+                    </div>
+                    <Button className="w-full" variant="outline" onClick={() => navigate(`/projects/${results.project.slug}`)}>
+                      View Project
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Practice Puzzle */}
+              {results.puzzle && (
+                <Card className="border-2">
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Target className="w-5 h-5 text-primary" />
+                      <CardTitle className="text-lg">Recommended Practice</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-xl mb-2">{results.puzzle.title}</h3>
+                      <p className="text-sm text-muted-foreground mb-3">{results.puzzle.summary}</p>
+                      <div className="flex items-center gap-2 mb-4">
+                        <DifficultyBadge difficulty={results.puzzle.difficulty} />
+                        <Badge variant="secondary" className="text-xs">{results.puzzle.category}</Badge>
+                        <Badge variant="outline" className="text-xs">{results.puzzle.estMinutes} min</Badge>
+                      </div>
+                    </div>
+                    <Button className="w-full" variant="outline" onClick={() => navigate(`/practice/puzzles/${results.puzzle.slug}`)}>
+                      Start Exercise
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             <div className="pt-6 border-t text-center">
+              <p className="text-sm text-muted-foreground mb-4">
+                These recommendations are tailored to your current skill level and interests. Start with any of these to begin your learning journey!
+              </p>
               <Button variant="ghost" onClick={() => {
                 setShowResults(false);
                 setCurrentQuestion(0);
@@ -292,7 +384,7 @@ export default function Assessment() {
         <CardHeader>
           <CardTitle className="text-3xl">Skill Assessment</CardTitle>
           <CardDescription>
-            Answer {questions.length} questions to find the best learning path for your skill level
+            Answer {questions.length} questions to get personalized recommendations for your learning journey
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -338,7 +430,6 @@ export default function Assessment() {
               onClick={handlePrevious}
               disabled={currentQuestion === 0}
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
               Previous
             </Button>
             <Button
@@ -346,7 +437,7 @@ export default function Assessment() {
               disabled={!canProceed}
             >
               {currentQuestion === questions.length - 1 ? "See Results" : "Next"}
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           </div>
         </CardContent>

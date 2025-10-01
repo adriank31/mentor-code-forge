@@ -86,6 +86,12 @@ export default function Projects() {
                   <Clock className="w-3 h-3 mr-1" />
                   {project.estMinutes} min
                 </Badge>
+                {project.proOnly && (
+                  <Badge variant="outline" className="gap-1">
+                    <Lock className="w-3 h-3" />
+                    Pro
+                  </Badge>
+                )}
               </div>
             </CardHeader>
             <CardContent>

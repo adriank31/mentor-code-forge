@@ -117,7 +117,7 @@ int main() {
     difficulty: "intermediate",
     bugType: "Memory",
     estMinutes: 30,
-    proOnly: true,
+    proOnly: false,
     starterCode: `#include <stdlib.h>
 #include <stdio.h>
 
@@ -220,7 +220,7 @@ int main() {
     difficulty: "intermediate",
     bugType: "Memory",
     estMinutes: 35,
-    proOnly: true,
+    proOnly: false,
     starterCode: `#include <stdlib.h>
 #include <string.h>
 

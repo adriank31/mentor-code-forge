@@ -109,7 +109,7 @@ export const projects: Project[] = [
       "When fuzzed inputs, Then no undefined behavior and invariants hold."
     ],
     starterFiles: ["q15.h", "q31.h", "bench.c"],
-    proOnly: false
+    proOnly: true
   },
   {
     slug: "crc-calc",

@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PracticeAssessment } from "@/components/PracticeAssessment";
 
 const categories = ["Embedded Systems", "Systems Programming", "Firmware Engineering", "Cybersecurity Engineering", "Toolchain Developer"];
 
@@ -250,6 +251,16 @@ export default function Practice() {
           ))}
         </div>
       )}
+
+      <div className="mt-12">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold mb-2">Not Sure Where to Start?</h2>
+          <p className="text-muted-foreground">
+            Take our quick assessment to discover which practice problems match your interests and goals.
+          </p>
+        </div>
+        <PracticeAssessment />
+      </div>
     </div>
   );
 }

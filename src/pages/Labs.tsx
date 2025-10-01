@@ -86,6 +86,12 @@ export default function Labs() {
                   <Clock className="w-3 h-3 mr-1" />
                   {lab.estMinutes} min
                 </Badge>
+                {lab.proOnly && (
+                  <Badge variant="outline" className="gap-1">
+                    <Lock className="w-3 h-3" />
+                    Pro
+                  </Badge>
+                )}
               </div>
             </CardHeader>
             <CardContent>
