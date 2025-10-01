@@ -11,6 +11,8 @@ import Editor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { toast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function PathLesson() {
   const { slug, moduleId, lessonId } = useParams();
@@ -87,8 +89,12 @@ export default function PathLesson() {
   const renderLessonContent = () => {
     if (lesson.type === "quiz") {
       return (
-        <div className="prose prose-invert max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: lesson.content?.markdown?.replace(/\n/g, '<br>') || '' }} />
+        <div className="space-y-6">
+          <div className="prose prose-lg prose-invert max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-base prose-p:leading-relaxed prose-li:text-base prose-code:text-sm prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {lesson.content?.markdown || ''}
+            </ReactMarkdown>
+          </div>
           <div className="mt-8">
             <Button onClick={handleComplete} size="lg" className="w-full">
               Complete Quiz
@@ -101,9 +107,11 @@ export default function PathLesson() {
 
     if (lesson.content?.code) {
       return (
-        <div className="space-y-4">
-          <div className="prose prose-invert max-w-none mb-6">
-            <div dangerouslySetInnerHTML={{ __html: lesson.content.markdown?.replace(/\n/g, '<br>') || '' }} />
+        <div className="space-y-6">
+          <div className="prose prose-lg prose-invert max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-base prose-p:leading-relaxed prose-li:text-base prose-code:text-sm prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-muted prose-pre:border prose-pre:border-border">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {lesson.content.markdown || ''}
+            </ReactMarkdown>
           </div>
 
           <Tabs defaultValue="editor" className="w-full">
@@ -196,8 +204,10 @@ export default function PathLesson() {
     }
 
     return (
-      <div className="prose prose-invert max-w-none">
-        <div dangerouslySetInnerHTML={{ __html: lesson.content?.markdown?.replace(/\n/g, '<br>') || '' }} />
+      <div className="prose prose-lg prose-invert max-w-none prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-base prose-p:leading-relaxed prose-li:text-base prose-code:text-sm prose-code:bg-muted prose-code:px-2 prose-code:py-1 prose-code:rounded prose-pre:bg-muted prose-pre:border prose-pre:border-border">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {lesson.content?.markdown || ''}
+        </ReactMarkdown>
       </div>
     );
   };
