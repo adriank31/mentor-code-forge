@@ -24,7 +24,6 @@ interface TopNavProps {
 const navItems = [
   { name: "Practice", href: "/practice" },
   { name: "Paths", href: "/paths" },
-  { name: "Catalog", href: "/catalog" },
   { name: "Pricing", href: "/pricing" },
 ];
 

@@ -25,7 +25,6 @@ const navItems = [
   { name: "Labs", href: "/labs", icon: FlaskConical },
   { name: "Projects", href: "/projects", icon: FolderCode },
   { name: "Paths", href: "/paths", icon: BookOpen },
-  { name: "Catalog", href: "/catalog", icon: Library },
   { name: "Progress", href: "/progress", icon: TrendingUp },
   { name: "Community", href: "/community", icon: Users },
   { name: "Docs", href: "/docs", icon: FileText },
