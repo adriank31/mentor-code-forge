@@ -137,6 +137,93 @@ export type Database = {
         }
         Relationships: []
       }
+      project_milestone_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          milestone_id: string
+          notes: string | null
+          project_slug: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          milestone_id: string
+          notes?: string | null
+          project_slug: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          milestone_id?: string
+          notes?: string | null
+          project_slug?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      project_submissions: {
+        Row: {
+          admin_feedback: string | null
+          community_votes: number
+          created_at: string
+          file_paths: string[]
+          id: string
+          is_public: boolean
+          project_slug: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submission_description: string | null
+          submission_title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_feedback?: string | null
+          community_votes?: number
+          created_at?: string
+          file_paths: string[]
+          id?: string
+          is_public?: boolean
+          project_slug: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_description?: string | null
+          submission_title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_feedback?: string | null
+          community_votes?: number
+          created_at?: string
+          file_paths?: string[]
+          id?: string
+          is_public?: boolean
+          project_slug?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_description?: string | null
+          submission_title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       puzzle_completions: {
         Row: {
           completed_at: string | null

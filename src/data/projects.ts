@@ -1,3 +1,11 @@
+export interface ProjectMilestone {
+  id: string;
+  title: string;
+  description: string;
+  estimatedHours: number;
+  deliverables: string[];
+}
+
 export interface Project {
   slug: string;
   title: string;
@@ -5,10 +13,14 @@ export interface Project {
   difficulty: "beginner" | "intermediate" | "advanced";
   estMinutes: number;
   summary: string;
+  detailedRequirements?: string;
+  technicalSpecifications?: string[];
   tags: string[];
   outcomes: string[];
   acceptanceCriteria: string[];
   starterFiles?: string[];
+  starterCodeUrl?: string;
+  milestones?: ProjectMilestone[];
   proOnly: boolean;
 }
 
@@ -20,6 +32,15 @@ export const projects: Project[] = [
     difficulty: "advanced",
     estMinutes: 90,
     summary: "Implement a minimal lock-free waker so worker threads can sleep and be woken without using a heavy mutex.",
+    detailedRequirements: "Build a lock-free waker mechanism that allows worker threads to efficiently sleep when idle and wake when work arrives. The implementation must handle race conditions, prevent lost wakeups, and avoid the ABA problem. Use atomic operations with appropriate memory ordering to ensure correctness on weakly-ordered architectures.",
+    technicalSpecifications: [
+      "Use C11 atomic operations or C++11 std::atomic",
+      "Implement wake() and wait() operations",
+      "Handle spurious wakeups gracefully",
+      "Prevent lost wakeup and thundering herd scenarios",
+      "Memory ordering: acquire-release semantics minimum",
+      "Must pass ThreadSanitizer and UndefinedBehaviorSanitizer"
+    ],
     tags: ["atomics", "memory-order", "CAS", "ABA"],
     outcomes: [
       "Use atomics correctly",
@@ -32,6 +53,41 @@ export const projects: Project[] = [
       "When run under TSAN/UBSan stress tests, Then no data races or undefined behavior occur."
     ],
     starterFiles: ["waker.h", "waker.c", "test_waker.c"],
+    milestones: [
+      {
+        id: "design",
+        title: "Design Phase",
+        description: "Research lock-free algorithms and design the waker API",
+        estimatedHours: 1,
+        deliverables: [
+          "API design document",
+          "State machine diagram",
+          "Memory ordering justification"
+        ]
+      },
+      {
+        id: "implementation",
+        title: "Core Implementation",
+        description: "Implement the lock-free waker using atomics",
+        estimatedHours: 3,
+        deliverables: [
+          "Completed waker.c implementation",
+          "Basic unit tests passing",
+          "Comments explaining critical sections"
+        ]
+      },
+      {
+        id: "testing",
+        title: "Testing & Validation",
+        description: "Stress test and validate under sanitizers",
+        estimatedHours: 2,
+        deliverables: [
+          "Stress test suite",
+          "TSAN/UBSAN clean runs",
+          "Performance benchmarks"
+        ]
+      }
+    ],
     proOnly: true
   },
   {
