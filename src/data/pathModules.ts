@@ -1,3 +1,10 @@
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctAnswer: string; // 'a', 'b', 'c', or 'd'
+  explanation?: string;
+}
+
 export interface Lesson {
   id: string;
   title: string;
@@ -5,6 +12,7 @@ export interface Lesson {
   duration: number; // minutes
   content?: {
     markdown?: string;
+    quiz?: QuizQuestion[];
     code?: {
       language: string;
       starter: string;
@@ -142,29 +150,41 @@ int main() {
           type: "quiz",
           duration: 5,
           content: {
-            markdown: `# Quiz: Pointer Safety
-
-Test your understanding of safe pointer usage.
-
-1. **What should you always do before using a pointer?**
-   - a) Delete it
-   - b) Initialize it
-   - c) Increment it
-   - d) Ignore it
-
-2. **What is a dangling pointer?**
-   - a) A pointer that points to valid memory
-   - b) A pointer that points to freed or invalid memory
-   - c) A null pointer
-   - d) A pointer to a function
-
-3. **What's the safe value to initialize a pointer with?**
-   - a) 0
-   - b) nullptr
-   - c) -1
-   - d) Any random value
-
-**Answers:** 1-b, 2-b, 3-b`,
+            quiz: [
+              {
+                question: "What should you always do before using a pointer?",
+                options: [
+                  "Delete it",
+                  "Initialize it",
+                  "Increment it",
+                  "Ignore it"
+                ],
+                correctAnswer: "b",
+                explanation: "Always initialize pointers (preferably to nullptr) before use to avoid undefined behavior from accessing random memory locations."
+              },
+              {
+                question: "What is a dangling pointer?",
+                options: [
+                  "A pointer that points to valid memory",
+                  "A pointer that points to freed or invalid memory",
+                  "A null pointer",
+                  "A pointer to a function"
+                ],
+                correctAnswer: "b",
+                explanation: "A dangling pointer points to memory that has been freed or is no longer valid. Dereferencing it leads to undefined behavior and potential security vulnerabilities."
+              },
+              {
+                question: "What's the safe value to initialize a pointer with?",
+                options: [
+                  "0",
+                  "nullptr",
+                  "-1",
+                  "Any random value"
+                ],
+                correctAnswer: "b",
+                explanation: "In modern C++, nullptr is the recommended way to initialize pointers. It's type-safe and makes your intentions clear."
+              }
+            ],
           },
         },
       ],
