@@ -7,6 +7,7 @@ import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Lock, Play, TestTube, Send } from "lucide-react";
 import { labs } from "@/data/labs";
 import { ProGate } from "@/components/ProGate";
+import { AuthGate } from "@/components/AuthGate";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -158,5 +159,6 @@ export default function LabDetail() {
     </div>
   );
 
-  return lab.proOnly ? <ProGate>{labContent}</ProGate> : labContent;
+  const gatedContent = lab.proOnly ? <ProGate>{labContent}</ProGate> : labContent;
+  return <AuthGate>{gatedContent}</AuthGate>;
 }

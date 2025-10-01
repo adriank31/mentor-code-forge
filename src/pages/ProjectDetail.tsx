@@ -7,6 +7,7 @@ import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Lock, Play, CheckCircle, Loader2 } from "lucide-react";
 import { projects } from "@/data/projects";
 import { ProGate } from "@/components/ProGate";
+import { AuthGate } from "@/components/AuthGate";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -217,9 +218,6 @@ export default function ProjectDetail() {
     </div>
   );
 
-  if (project?.proOnly) {
-    return <ProGate>{content}</ProGate>;
-  }
-
-  return content;
+  const gatedContent = project?.proOnly ? <ProGate>{content}</ProGate> : content;
+  return <AuthGate>{gatedContent}</AuthGate>;
 }

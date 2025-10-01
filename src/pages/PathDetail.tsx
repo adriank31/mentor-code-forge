@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Lock, BookOpen, Clock } from "lucide-react";
 import { paths } from "@/data/paths";
+import { ProGate } from "@/components/ProGate";
+import { AuthGate } from "@/components/AuthGate";
 
 export default function PathDetail() {
   const { slug } = useParams();
@@ -19,7 +21,7 @@ export default function PathDetail() {
     );
   }
 
-  return (
+  const content = (
     <div className="p-4 md:p-6 space-y-6">
       <Card>
         <CardHeader>
@@ -70,4 +72,7 @@ export default function PathDetail() {
       </div>
     </div>
   );
+
+  const gatedContent = path.proOnly ? <ProGate>{content}</ProGate> : content;
+  return <AuthGate>{gatedContent}</AuthGate>;
 }

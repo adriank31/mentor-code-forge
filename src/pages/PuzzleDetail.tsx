@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
-import { Lightbulb, Clock, CheckCircle2, RotateCcw, Play, Save } from "lucide-react";
+import { Lightbulb, Clock, CheckCircle2, RotateCcw, Play, Save, Lock } from "lucide-react";
 import { puzzles } from "@/data/puzzles";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState, useEffect } from "react";
@@ -11,6 +11,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AuthGate } from "@/components/AuthGate";
+import { ProGate } from "@/components/ProGate";
 import { RunResult } from "@/components/RunResult";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -130,7 +131,7 @@ export default function PuzzleDetail() {
     );
   }
 
-  return (
+  const editorContent = (
     <div className="h-[calc(100vh-4rem)] flex flex-col">
       <ResizablePanelGroup direction="horizontal" className="flex-1">
         {/* Left Panel - Problem Description */}
@@ -145,6 +146,12 @@ export default function PuzzleDetail() {
                   <Clock className="w-3 h-3 mr-1" />
                   {puzzle.estMinutes} min
                 </Badge>
+                {puzzle.proOnly && (
+                  <Badge variant="outline" className="gap-1">
+                    <Lock className="w-3 h-3" />
+                    Pro
+                  </Badge>
+                )}
               </div>
             </div>
 
@@ -310,4 +317,7 @@ export default function PuzzleDetail() {
       </ResizablePanelGroup>
     </div>
   );
+
+  const gatedContent = puzzle.proOnly ? <ProGate>{editorContent}</ProGate> : editorContent;
+  return <AuthGate>{gatedContent}</AuthGate>;
 }

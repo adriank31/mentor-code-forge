@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Lock, BookOpen, Clock } from "lucide-react";
 import { courses } from "@/data/courses";
+import { ProGate } from "@/components/ProGate";
+import { AuthGate } from "@/components/AuthGate";
 
 export default function CourseDetail() {
   const { slug } = useParams();
@@ -19,7 +21,7 @@ export default function CourseDetail() {
     );
   }
 
-  return (
+  const content = (
     <div className="p-4 md:p-6 space-y-6">
       <Card>
         <CardHeader>
@@ -70,4 +72,7 @@ export default function CourseDetail() {
       </div>
     </div>
   );
+
+  const gatedContent = course.proOnly ? <ProGate>{content}</ProGate> : content;
+  return <AuthGate>{gatedContent}</AuthGate>;
 }

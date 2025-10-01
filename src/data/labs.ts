@@ -40,7 +40,7 @@ int main() {
     difficulty: "intermediate",
     bugType: "Memory",
     estMinutes: 35,
-    proOnly: false,
+    proOnly: true,
     starterCode: `#include <stdlib.h>
 #include <stdio.h>
 
@@ -69,7 +69,7 @@ int main() {
     difficulty: "intermediate",
     bugType: "Memory",
     estMinutes: 30,
-    proOnly: false,
+    proOnly: true,
     starterCode: `#include <stdlib.h>
 #include <stdio.h>
 
@@ -172,7 +172,7 @@ int main() {
     difficulty: "intermediate",
     bugType: "Memory",
     estMinutes: 35,
-    proOnly: false,
+    proOnly: true,
     starterCode: `#include <stdlib.h>
 #include <string.h>
 
@@ -222,7 +222,7 @@ int main() {
     difficulty: "intermediate",
     bugType: "I/O",
     estMinutes: 40,
-    proOnly: false,
+    proOnly: true,
     starterCode: `#include <unistd.h>
 #include <stdio.h>
 
@@ -246,7 +246,7 @@ int main() {
     difficulty: "intermediate",
     bugType: "Parsing",
     estMinutes: 45,
-    proOnly: false,
+    proOnly: true,
     starterCode: `#include <stdio.h>
 #include <string.h>
 

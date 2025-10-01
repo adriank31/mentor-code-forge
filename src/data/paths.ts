@@ -25,7 +25,7 @@ export const paths: Path[] = [
     difficulty: "intermediate",
     modules: 12,
     estMinutes: 360,
-    proOnly: false
+    proOnly: true
   },
   {
     slug: "concurrency-and-race-freedom",

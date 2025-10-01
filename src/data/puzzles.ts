@@ -10,6 +10,7 @@ export interface Puzzle {
   sampleInput?: string;
   sampleOutput?: string;
   hints: string[];
+  proOnly?: boolean;
 }
 
 export const puzzles: Puzzle[] = [
@@ -62,7 +63,8 @@ export const puzzles: Puzzle[] = [
       "Maintain a free list of available blocks",
       "Track the state of each allocated block",
       "Detect use-after-free by checking block status"
-    ]
+    ],
+    proOnly: true
   },
   {
     slug: "xor-encode",
@@ -113,7 +115,8 @@ export const puzzles: Puzzle[] = [
       "Calculate stack frame size for each function",
       "Consider tail recursion optimization",
       "Account for compiler-specific stack usage"
-    ]
+    ],
+    proOnly: true
   },
   {
     slug: "string-rotation",
@@ -181,6 +184,7 @@ export const puzzles: Puzzle[] = [
       "Use Brian Kernighan's algorithm for bit counting",
       "XOR with mask for range flips",
       "For palindrome, compare bits from both ends"
-    ]
+    ],
+    proOnly: true
   }
 ];

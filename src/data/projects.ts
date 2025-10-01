@@ -116,7 +116,7 @@ export const projects: Project[] = [
       "Under sanitizer / fuzz, no crash or UB."
     ],
     starterFiles: ["elf.h", "elf_parser.c", "sample binaries"],
-    proOnly: false
+    proOnly: true
   },
   {
     slug: "interrupt-latency",
@@ -137,7 +137,7 @@ export const projects: Project[] = [
       "Simulated real schedule ≤ bound."
     ],
     starterFiles: ["latency.h", "latency.c", "sim.c"],
-    proOnly: false
+    proOnly: true
   },
   {
     slug: "mmio-ordering",
@@ -158,7 +158,7 @@ export const projects: Project[] = [
       "TSAN shows no data-race issues."
     ],
     starterFiles: ["mmio.h", "device_sim.c", "test_ordering.c"],
-    proOnly: false
+    proOnly: true
   },
   {
     slug: "format-safety",

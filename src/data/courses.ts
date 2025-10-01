@@ -25,7 +25,7 @@ export const courses: Course[] = [
     difficulty: "intermediate",
     lessons: 32,
     estMinutes: 640,
-    proOnly: false
+    proOnly: true
   },
   {
     slug: "concurrency-and-race-freedom",

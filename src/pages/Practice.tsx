@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DifficultyBadge } from "@/components/DifficultyBadge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Filter, Clock, Loader2 } from "lucide-react";
+import { Search, Filter, Clock, Loader2, Lock } from "lucide-react";
 import { puzzles } from "@/data/puzzles";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -222,6 +222,12 @@ export default function Practice() {
                     <Clock className="w-3 h-3 mr-1" />
                     {puzzle.estMinutes} min
                   </Badge>
+                  {puzzle.proOnly && (
+                    <Badge variant="outline" className="gap-1">
+                      <Lock className="w-3 h-3" />
+                      Pro
+                    </Badge>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-1 mt-2">
                   {puzzle.tags.map(tag => (
