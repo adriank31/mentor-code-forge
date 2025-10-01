@@ -58,7 +58,7 @@ export function ProGate({ children, fallback }: ProGateProps) {
               <li>• Advanced labs with fuzzing tools</li>
               <li>• Exclusive security projects</li>
               <li>• Priority support</li>
-              <li>• Certificate of completion</li>
+              <li>• Badge of Completion</li>
             </ul>
           </div>
           <Button onClick={() => navigate('/pricing')} size="lg">

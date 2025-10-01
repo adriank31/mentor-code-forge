@@ -14,6 +14,7 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Paths from "./pages/Paths";
 import PathDetail from "./pages/PathDetail";
+import PathLesson from "./pages/PathLesson";
 import Catalog from "./pages/Catalog";
 import CourseDetail from "./pages/CourseDetail";
 import Pricing from "./pages/Pricing";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/projects/:slug" element={<ProjectDetail />} />
             <Route path="/paths" element={<Paths />} />
             <Route path="/paths/:slug" element={<PathDetail />} />
+            <Route path="/paths/:slug/:moduleId/:lessonId" element={<PathLesson />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/courses/:slug" element={<CourseDetail />} />
             <Route path="/pricing" element={<Pricing />} />
