@@ -880,4 +880,340 @@ Next: Perfect forwarding and advanced move patterns!`,
       },
     ],
   },
+  {
+    id: "module-2",
+    title: "Smart Pointers and RAII",
+    description: "Automatic memory management with modern C++",
+    lessons: [
+      {
+        id: "lesson-2-1",
+        title: "Introduction to Smart Pointers",
+        type: "lesson",
+        duration: 30,
+        content: {
+          markdown: `# Smart Pointers in C++
+
+Smart pointers automatically manage memory, preventing leaks and dangling pointers through RAII principles.
+
+## Types of Smart Pointers
+
+### unique_ptr - Exclusive Ownership
+\`\`\`cpp
+auto ptr = std::make_unique<Widget>();
+// ptr owns the Widget exclusively
+\`\`\`
+
+### shared_ptr - Shared Ownership
+\`\`\`cpp
+auto ptr1 = std::make_shared<Widget>();
+auto ptr2 = ptr1; // Both share ownership
+\`\`\`
+
+### weak_ptr - Non-owning Reference
+\`\`\`cpp
+std::weak_ptr<Widget> weak = shared;
+// Doesn't affect reference count
+\`\`\``,
+        },
+      },
+      {
+        id: "lesson-2-2",
+        title: "Smart Pointer Challenge",
+        type: "challenge",
+        duration: 25,
+        content: {
+          markdown: `Implement resource management using smart pointers`,
+          code: {
+            language: "cpp",
+            starter: `#include <memory>
+// TODO: Implement using smart pointers`,
+            solution: `#include <memory>
+#include <iostream>
+
+int main() {
+    auto resource = std::make_unique<int>(42);
+    std::cout << *resource << std::endl;
+    return 0;
+}`,
+            tests: `// Test cases here`,
+          },
+        },
+      },
+      {
+        id: "lesson-2-3",
+        title: "Quiz: Smart Pointers",
+        type: "quiz",
+        duration: 10,
+        content: {
+          quiz: [
+            {
+              question: "Which smart pointer allows shared ownership?",
+              options: ["unique_ptr", "shared_ptr", "weak_ptr", "auto_ptr"],
+              correctAnswer: "b",
+              explanation: "shared_ptr uses reference counting to allow multiple pointers to share ownership of the same object."
+            }
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "module-3",
+    title: "Move Semantics",
+    description: "Efficient resource transfer with move semantics",
+    lessons: [
+      {
+        id: "lesson-3-1",
+        title: "Understanding Move Semantics",
+        type: "lesson",
+        duration: 35,
+        content: {
+          markdown: `# Move Semantics
+
+Move semantics enable efficient transfer of resources without expensive copying.
+
+## Rvalue References
+\`\`\`cpp
+void process(std::string&& str) {
+    // str is an rvalue reference
+}
+\`\`\``,
+        },
+      },
+    ],
+  },
+  {
+    id: "module-2",
+    title: "Smart Pointers and RAII",
+    description: "Automatic memory management with modern C++",
+    lessons: [
+      {
+        id: "lesson-2-1",
+        title: "Introduction to Smart Pointers",
+        type: "lesson",
+        duration: 30,
+        content: {
+          markdown: `# Smart Pointers in C++
+
+## 🎯 What Are Smart Pointers?
+
+Smart pointers are objects that act like pointers but automatically manage memory through RAII (Resource Acquisition Is Initialization).
+
+## 📦 Types of Smart Pointers
+
+### unique_ptr - Exclusive Ownership
+
+\`\`\`cpp
+#include <memory>
+
+auto ptr = std::make_unique<Widget>();
+// ptr exclusively owns the Widget
+// Automatically deleted when ptr goes out of scope
+\`\`\`
+
+### shared_ptr - Shared Ownership
+
+\`\`\`cpp
+auto ptr1 = std::make_shared<Widget>();
+auto ptr2 = ptr1; // Both share ownership
+// Widget deleted when last shared_ptr is destroyed
+\`\`\`
+
+### weak_ptr - Non-owning Reference
+
+\`\`\`cpp
+std::weak_ptr<Widget> weak = shared;
+// Doesn't affect reference count
+// Prevents circular dependencies
+\`\`\`
+
+## 🎯 Key Takeaways
+
+1. Use **unique_ptr** by default
+2. Use **shared_ptr** when shared ownership needed
+3. Use **weak_ptr** to break cycles
+4. Smart pointers prevent leaks automatically`,
+        },
+      },
+      {
+        id: "lesson-2-2",
+        title: "Smart Pointer Challenge",
+        type: "challenge",
+        duration: 25,
+        content: {
+          markdown: `# Smart Pointer Challenge
+
+Implement resource management using smart pointers.
+
+## Requirements
+- Create resources with unique_ptr
+- Share ownership with shared_ptr
+- Demonstrate automatic cleanup`,
+          code: {
+            language: "cpp",
+            starter: `#include <memory>
+#include <iostream>
+
+class Resource {
+public:
+    int value;
+    Resource(int v) : value(v) {
+        std::cout << "Resource created: " << value << std::endl;
+    }
+    ~Resource() {
+        std::cout << "Resource destroyed: " << value << std::endl;
+    }
+};
+
+// TODO: Implement using smart pointers
+
+int main() {
+    // TODO: Create and use smart pointers
+    
+    return 0;
+}`,
+            solution: `#include <memory>
+#include <iostream>
+
+class Resource {
+public:
+    int value;
+    Resource(int v) : value(v) {
+        std::cout << "Resource created: " << value << std::endl;
+    }
+    ~Resource() {
+        std::cout << "Resource destroyed: " << value << std::endl;
+    }
+};
+
+int main() {
+    std::cout << "=== Unique Pointer ===\\n";
+    {
+        auto unique = std::make_unique<Resource>(1);
+        std::cout << "Value: " << unique->value << std::endl;
+    } // Automatically destroyed
+    
+    std::cout << "\\n=== Shared Pointers ===\\n";
+    {
+        auto shared1 = std::make_shared<Resource>(2);
+        {
+            auto shared2 = shared1;
+            std::cout << "Reference count: " << shared1.use_count() << std::endl;
+        }
+        std::cout << "Reference count: " << shared1.use_count() << std::endl;
+    } // Destroyed when last reference goes away
+    
+    return 0;
+}`,
+            tests: `// Tests auto cleanup
+// Tests reference counting
+// Tests proper destruction`,
+          },
+        },
+      },
+      {
+        id: "lesson-2-3",
+        title: "Quiz: Smart Pointers",
+        type: "quiz",
+        duration: 10,
+        content: {
+          quiz: [
+            {
+              question: "Which smart pointer allows shared ownership?",
+              options: ["unique_ptr", "shared_ptr", "weak_ptr", "auto_ptr"],
+              correctAnswer: "b",
+              explanation: "shared_ptr uses reference counting to allow multiple pointers to share ownership of the same object."
+            },
+            {
+              question: "What happens when a unique_ptr goes out of scope?",
+              options: [
+                "Nothing, memory leaks",
+                "The object is automatically deleted",
+                "You must manually delete",
+                "The object is copied"
+              ],
+              correctAnswer: "b",
+              explanation: "unique_ptr automatically deletes the managed object when it goes out of scope, preventing memory leaks."
+            }
+          ],
+        },
+      },
+    ],
+  },
+  {
+    id: "module-3",
+    title: "Move Semantics",
+    description: "Efficient resource transfer with move semantics",
+    lessons: [
+      {
+        id: "lesson-3-1",
+        title: "Understanding Move Semantics",
+        type: "lesson",
+        duration: 35,
+        content: {
+          markdown: `# Move Semantics
+
+## ⚡ What Are Move Semantics?
+
+Move semantics enable efficient transfer of resources without expensive copying.
+
+## 🔄 Rvalue References
+
+\`\`\`cpp
+void process(std::string&& str) {
+    // str is an rvalue reference
+    // Can "steal" its resources
+}
+\`\`\`
+
+## 🎯 Move Constructor
+
+\`\`\`cpp
+class Widget {
+    int* data;
+public:
+    // Move constructor
+    Widget(Widget&& other) noexcept 
+        : data(other.data) {
+        other.data = nullptr;  // Leave other in valid state
+    }
+};
+\`\`\`
+
+## 📝 Key Benefits
+
+1. **Performance** - Avoid expensive copies
+2. **Resource transfer** - Efficient ownership transfer
+3. **Return optimization** - Fast returns from functions
+
+## 🎯 When to Use
+
+- Returning large objects from functions
+- Transferring unique resources (file handles, sockets)
+- Working with containers of large objects`,
+        },
+      },
+      {
+        id: "lesson-3-2",
+        title: "Quiz: Move Semantics",
+        type: "quiz",
+        duration: 10,
+        content: {
+          quiz: [
+            {
+              question: "What does std::move do?",
+              options: [
+                "Moves the object in memory",
+                "Casts to rvalue reference",
+                "Copies the object",
+                "Deletes the object"
+              ],
+              correctAnswer: "b",
+              explanation: "std::move casts its argument to an rvalue reference, enabling move semantics. It doesn't actually move anything by itself."
+            }
+          ],
+        },
+      },
+    ],
+  },
 ];

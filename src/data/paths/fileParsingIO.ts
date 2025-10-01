@@ -459,4 +459,46 @@ int main() {
       },
     ],
   },
+  {
+    id: "module-2",
+    title: "Parsing Untrusted Input",
+    description: "Safely parse and validate external data",
+    lessons: [
+      {
+        id: "lesson-2-1",
+        title: "Input Validation Techniques",
+        type: "lesson",
+        duration: 30,
+        content: {
+          markdown: `# Validating Untrusted Input
+
+Always validate and sanitize external data.
+
+## Validation Strategies
+- Whitelist validation
+- Length checking
+- Type checking
+- Format validation`,
+        },
+      },
+    ],
+  },
+  {
+    id: "module-3",
+    title: "Robust Error Handling",
+    description: "Handle I/O errors gracefully",
+    lessons: [
+      {
+        id: "lesson-3-1",
+        title: "Exception-Safe I/O",
+        type: "lesson",
+        duration: 25,
+        content: {
+          markdown: `# Exception-Safe I/O
+
+Ensure resources are cleaned up even when errors occur.`,
+        },
+      },
+    ],
+  },
 ];

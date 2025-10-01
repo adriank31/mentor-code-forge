@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,12 +11,17 @@ import { pathModules } from "@/data/pathModules";
 import { ProGate } from "@/components/ProGate";
 import { AuthGate } from "@/components/AuthGate";
 import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function PathDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const path = paths.find(p => p.slug === slug);
   const modules = pathModules[slug || ""];
+  const [completedLessonIds, setCompletedLessonIds] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
 
   if (!path) {
     return (
@@ -26,9 +32,32 @@ export default function PathDetail() {
     );
   }
 
-  // Calculate progress (mock for now - would come from Supabase in production)
-  const completedLessons = 0;
+  // Fetch progress from database
+  useEffect(() => {
+    const fetchProgress = async () => {
+      if (!user || !modules) {
+        setLoading(false);
+        return;
+      }
+
+      const { data } = await supabase
+        .from("lesson_progress")
+        .select("lesson_id")
+        .eq("user_id", user.id)
+        .eq("path_slug", slug)
+        .eq("completed", true);
+
+      if (data) {
+        setCompletedLessonIds(new Set(data.map(p => p.lesson_id)));
+      }
+      setLoading(false);
+    };
+
+    fetchProgress();
+  }, [user, slug, modules]);
+
   const totalLessons = modules?.reduce((acc, m) => acc + m.lessons.length, 0) || 0;
+  const completedLessons = completedLessonIds.size;
   const progressPercent = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
   const handleStartPath = () => {
@@ -123,20 +152,22 @@ export default function PathDetail() {
                     {/* Lessons */}
                     <div className="space-y-2">
                       {module.lessons.map((lesson, lessonIndex) => {
-                        const isCompleted = false; // Would check from Supabase
-                        const isLocked = lessonIndex > 0 && !isCompleted; // Sequential unlock
+                        const isCompleted = completedLessonIds.has(lesson.id);
+                        const prevLesson = lessonIndex > 0 ? module.lessons[lessonIndex - 1] : null;
+                        const isPrevCompleted = prevLesson ? completedLessonIds.has(prevLesson.id) : true;
+                        const isLocked = lessonIndex > 0 && !isPrevCompleted;
 
                         return (
                           <Button
                             key={lesson.id}
                             variant="ghost"
-                            className="w-full justify-start h-auto py-3 px-4 hover:bg-accent/50"
+                            className="w-full justify-start h-auto py-3 px-4 hover:bg-accent/50 transition-all"
                             onClick={() => !isLocked && navigate(`/paths/${slug}/${module.id}/${lesson.id}`)}
                             disabled={isLocked}
                           >
                             <div className="flex items-center gap-3 w-full">
                               {isCompleted ? (
-                                <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
+                                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                               ) : (
                                 <Circle className="w-5 h-5 text-muted-foreground flex-shrink-0" />
                               )}

@@ -23,7 +23,7 @@ export const paths: Path[] = [
     title: "Memory & Lifetimes",
     summary: "Master memory management, pointer safety, and object lifetime rules.",
     difficulty: "intermediate",
-    modules: 12,
+    modules: 3,
     estMinutes: 360,
     proOnly: true
   },
@@ -32,7 +32,7 @@ export const paths: Path[] = [
     title: "Concurrency & Race Freedom",
     summary: "Advanced threading, synchronization, and race-condition prevention.",
     difficulty: "advanced",
-    modules: 10,
+    modules: 3,
     estMinutes: 420,
     proOnly: true
   },
@@ -41,7 +41,7 @@ export const paths: Path[] = [
     title: "File Parsing & Robust I/O",
     summary: "Handle partial reads/writes, parse untrusted input safely, and prevent buffer overflows.",
     difficulty: "intermediate",
-    modules: 7,
+    modules: 3,
     estMinutes: 300,
     proOnly: false
   },
@@ -50,7 +50,7 @@ export const paths: Path[] = [
     title: "Hardening & Fuzzing",
     summary: "Exploit prevention, fuzzing techniques, and security hardening.",
     difficulty: "advanced",
-    modules: 12,
+    modules: 3,
     estMinutes: 480,
     proOnly: true
   }

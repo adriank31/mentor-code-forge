@@ -399,4 +399,53 @@ int main() {
       },
     ],
   },
+  {
+    id: "module-2",
+    title: "Advanced Synchronization",
+    description: "Master advanced threading patterns",
+    lessons: [
+      {
+        id: "lesson-2-1",
+        title: "Condition Variables",
+        type: "lesson",
+        duration: 30,
+        content: {
+          markdown: `# Condition Variables
+
+Efficient thread synchronization and coordination.
+
+## Producer-Consumer Pattern
+\`\`\`cpp
+std::mutex mtx;
+std::condition_variable cv;
+std::queue<int> buffer;
+
+void producer() {
+    std::lock_guard<std::mutex> lock(mtx);
+    buffer.push(42);
+    cv.notify_one();
+}
+\`\`\``,
+        },
+      },
+    ],
+  },
+  {
+    id: "module-3",
+    title: "Lock-Free Programming",
+    description: "High-performance concurrent programming",
+    lessons: [
+      {
+        id: "lesson-3-1",
+        title: "Atomic Operations",
+        type: "lesson",
+        duration: 35,
+        content: {
+          markdown: `# Atomic Operations
+
+Lock-free synchronization using atomic operations.`,
+        },
+      },
+    ],
+  },
 ];

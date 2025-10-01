@@ -15,6 +15,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useLessonProgress } from "@/hooks/useLessonProgress";
 
 export default function PathLesson() {
   const { slug, moduleId, lessonId } = useParams();
@@ -31,6 +32,12 @@ export default function PathLesson() {
   const modules = pathModules[slug || ""];
   const module = modules?.find(m => m.id === moduleId);
   const lesson = module?.lessons.find(l => l.id === lessonId);
+  
+  const { progress, markComplete } = useLessonProgress(
+    slug || "",
+    moduleId || "",
+    lessonId || ""
+  );
 
   if (!path || !module || !lesson) {
     return (
@@ -79,11 +86,14 @@ export default function PathLesson() {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
+    await markComplete();
+    
     toast({
       title: "Lesson completed!",
       description: "Great job! Moving to next lesson.",
     });
+    
     if (nextLesson) {
       navigate(`/paths/${slug}/${nextLesson.moduleId}/${nextLesson.lesson.id}`);
     } else {
@@ -91,7 +101,7 @@ export default function PathLesson() {
     }
   };
 
-  const handleQuizSubmit = () => {
+  const handleQuizSubmit = async () => {
     if (!lesson.content?.quiz) return;
 
     let correct = 0;
@@ -105,13 +115,21 @@ export default function PathLesson() {
     setShowQuizResults(true);
 
     const percentage = (correct / lesson.content.quiz.length) * 100;
+    const score = Math.round(percentage);
+    
     if (percentage >= 70) {
+      await markComplete(score);
+      
       toast({
         title: "Great job! 🎉",
         description: `You scored ${correct}/${lesson.content.quiz.length}. Moving to next lesson.`,
       });
       setTimeout(() => {
-        handleComplete();
+        if (nextLesson) {
+          navigate(`/paths/${slug}/${nextLesson.moduleId}/${nextLesson.lesson.id}`);
+        } else {
+          navigate(`/paths/${slug}`);
+        }
       }, 3000);
     } else {
       toast({
@@ -414,21 +432,31 @@ export default function PathLesson() {
       </Card>
 
       {/* Lesson Content */}
-      <Card>
-        <CardHeader>
+      <Card className="border-2">
+        <CardHeader className="border-b bg-gradient-surface">
           <div className="flex items-start justify-between">
-            <div>
-              <CardTitle className="text-2xl mb-2">{lesson.title}</CardTitle>
-              <Badge variant={
-                lesson.type === "quiz" ? "secondary" :
-                lesson.type === "challenge" ? "default" : "outline"
-              }>
-                {lesson.type.charAt(0).toUpperCase() + lesson.type.slice(1)}
-              </Badge>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <CardTitle className="text-3xl">{lesson.title}</CardTitle>
+                {progress.completed && (
+                  <CheckCircle2 className="w-6 h-6 text-green-500" />
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <Badge variant={
+                  lesson.type === "quiz" ? "secondary" :
+                  lesson.type === "challenge" ? "default" : "outline"
+                } className="text-sm">
+                  {lesson.type.charAt(0).toUpperCase() + lesson.type.slice(1)}
+                </Badge>
+                {progress.score !== undefined && (
+                  <Badge variant="outline">Score: {progress.score}%</Badge>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 p-6">
           {renderLessonContent()}
         </CardContent>
       </Card>

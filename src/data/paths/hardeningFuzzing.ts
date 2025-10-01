@@ -513,4 +513,51 @@ int main() {
       },
     ],
   },
+  {
+    id: "module-2",
+    title: "Introduction to Fuzzing",
+    description: "Automated testing for finding bugs",
+    lessons: [
+      {
+        id: "lesson-2-1",
+        title: "What is Fuzzing?",
+        type: "lesson",
+        duration: 30,
+        content: {
+          markdown: `# Introduction to Fuzzing
+
+Fuzzing is automated testing that feeds random/malformed data to find bugs.
+
+## Types of Fuzzing
+- Mutation-based fuzzing
+- Generation-based fuzzing
+- Coverage-guided fuzzing`,
+        },
+      },
+    ],
+  },
+  {
+    id: "module-3",
+    title: "Exploit Mitigation",
+    description: "Techniques to prevent exploits",
+    lessons: [
+      {
+        id: "lesson-3-1",
+        title: "Modern Exploit Mitigations",
+        type: "lesson",
+        duration: 35,
+        content: {
+          markdown: `# Exploit Mitigation Techniques
+
+Layer defense mechanisms to prevent exploitation.
+
+## Key Mitigations
+- ASLR
+- Stack canaries
+- DEP/NX
+- Control Flow Integrity`,
+        },
+      },
+    ],
+  },
 ];
