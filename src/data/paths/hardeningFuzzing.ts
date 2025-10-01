@@ -14,18 +14,15 @@ export const hardeningFuzzingModules: Module[] = [
         content: {
           markdown: `# Introduction to Security Hardening
 
-## 🛡️ What is Security Hardening?
+## What is Security Hardening?
 
-Security hardening is the process of securing a system by:
-- Reducing attack surface
-- Implementing defense in depth
-- Detecting and preventing exploits
-- Following secure coding practices
+Security hardening is the process of securing a system by reducing its attack surface, implementing defense in depth, detecting and preventing exploits, and following secure coding practices.
 
-## 🎯 Core Security Principles
+## Core Security Principles
 
 ### Defense in Depth
-Multiple layers of security controls:
+
+Implement multiple layers of security controls so if one layer fails, others still provide protection:
 
 \`\`\`cpp
 // Layer 1: Input validation
@@ -47,7 +44,8 @@ try {
 \`\`\`
 
 ### Principle of Least Privilege
-Give minimal necessary permissions:
+
+Give components minimal necessary permissions:
 
 \`\`\`cpp
 class FileProcessor {
@@ -58,14 +56,13 @@ public:
     // Read-only access
     std::string readContent() const {
         std::ifstream file(filename);
-        // ... read only
+        // ... read only, no write access
     }
-    
-    // No write access unless explicitly needed
 };
 \`\`\`
 
 ### Fail Securely
+
 When errors occur, fail to a secure state:
 
 \`\`\`cpp
@@ -74,15 +71,15 @@ bool authenticate(const std::string& user, const std::string& pass) {
         // Attempt authentication
         return checkCredentials(user, pass);
     } catch (...) {
-        // On any error, deny access
-        return false;  // Secure default
+        // On any error, deny access (secure default)
+        return false;
     }
 }
 \`\`\`
 
-## 🚫 Common Vulnerability Types
+## Common Vulnerability Types
 
-### 1. Buffer Overflows
+### Buffer Overflows
 
 **Vulnerable:**
 \`\`\`cpp
@@ -96,7 +93,7 @@ std::string buffer;
 buffer = userInput;  // Safe, grows as needed
 \`\`\`
 
-### 2. Integer Overflows
+### Integer Overflows
 
 **Vulnerable:**
 \`\`\`cpp
@@ -112,7 +109,7 @@ if (userSize > SIZE_MAX / sizeof(int)) {
 size_t size = userSize * sizeof(int);
 \`\`\`
 
-### 3. Format String Attacks
+### Format String Attacks
 
 **Vulnerable:**
 \`\`\`cpp
@@ -123,10 +120,10 @@ printf(userInput);  // User controls format string!
 \`\`\`cpp
 printf("%s", userInput.c_str());  // Safe
 // Or better:
-std::cout << userInput;
+std::cout << userInput << std::endl;
 \`\`\`
 
-### 4. Time-of-Check to Time-of-Use (TOCTOU)
+### Time-of-Check to Time-of-Use (TOCTOU)
 
 **Vulnerable:**
 \`\`\`cpp
@@ -145,7 +142,7 @@ if (f == nullptr) {
 // Use file immediately
 \`\`\`
 
-## 🔐 Input Validation
+## Input Validation
 
 ### Whitelist vs Blacklist
 
@@ -192,7 +189,7 @@ bool validateEmail(const std::string& email) {
 }
 \`\`\`
 
-## 🔒 Memory Safety
+## Memory Safety
 
 ### Bounds Checking
 
@@ -230,24 +227,28 @@ auto widget = std::make_unique<Widget>();
 // Can't use after it's freed
 \`\`\`
 
-## 🛡️ Compiler Protections
+## Compiler Protections
 
 ### Stack Canaries
+
 \`\`\`bash
 g++ -fstack-protector-strong source.cpp
 \`\`\`
 
 ### Address Space Layout Randomization (ASLR)
+
 \`\`\`bash
 g++ -fPIE -pie source.cpp
 \`\`\`
 
 ### Non-Executable Stack
+
 \`\`\`bash
 g++ -Wl,-z,noexecstack source.cpp
 \`\`\`
 
 ### All Protections
+
 \`\`\`bash
 g++ -Wall -Wextra -Werror \\
     -fstack-protector-strong \\
@@ -257,29 +258,34 @@ g++ -Wall -Wextra -Werror \\
     source.cpp
 \`\`\`
 
-## 📊 Security Checklist
+## Security Checklist
 
-- [ ] Validate all inputs
-- [ ] Use safe string functions
-- [ ] Check array bounds
-- [ ] Use smart pointers
-- [ ] Enable compiler warnings
-- [ ] Enable compiler protections
-- [ ] Handle errors securely
-- [ ] Use const correctness
-- [ ] Avoid format string bugs
-- [ ] Check integer overflows
+- Validate all inputs
+- Use safe string functions
+- Check array bounds
+- Use smart pointers
+- Enable compiler warnings
+- Enable compiler protections
+- Handle errors securely
+- Use const correctness
+- Avoid format string bugs
+- Check integer overflows
 
-## 🎯 Key Takeaways
+## Key Takeaways
 
-1. **Multiple layers** of defense
-2. **Validate all inputs** (whitelist approach)
-3. **Use modern C++** features (smart pointers, containers)
-4. **Enable compiler** security features
-5. **Fail securely** on errors
-6. **Never trust** user input
+**Implement multiple layers of defense** so single points of failure don't compromise security.
 
-Next: Introduction to fuzzing and automated testing!`,
+**Validate all inputs using whitelist** approach to allow only known good data.
+
+**Use modern C++ features** like smart pointers and containers for automatic safety.
+
+**Enable compiler security features** to catch bugs and prevent exploits.
+
+**Fail securely on errors** by denying access rather than granting it.
+
+**Never trust user input** - always validate, sanitize, and check bounds.
+
+Next, we'll explore fuzzing and automated testing for finding bugs.`,
         },
       },
       {
@@ -290,25 +296,32 @@ Next: Introduction to fuzzing and automated testing!`,
         content: {
           markdown: `# Input Validation Challenge
 
-## 🎯 Your Mission
+## Your Mission
 
-Implement secure input validation for a user registration system.
+Implement secure input validation for a user registration system that protects against common attacks.
 
-## 📋 Requirements
+## Requirements
 
 1. Validate username (alphanumeric, 3-20 chars)
-2. Validate email format
-3. Validate password strength
+2. Validate email format using regex
+3. Validate password strength (min 8 chars, mixed case, digits, special)
 4. Reject invalid inputs securely
 5. Provide helpful error messages
 
-## 💡 Hints
+## Learning Objectives
 
-- Use whitelist validation
-- Check length constraints
+- Practice whitelist validation techniques
+- Learn regex for format validation
+- Implement comprehensive input checking
+- Understand password strength requirements
+
+## Hints
+
+- Use whitelist validation for usernames
+- Check length constraints first
 - Use regex for email validation
-- Check password complexity
-- Never reveal which part failed (security!)`,
+- Check password complexity requirements
+- Never reveal which part of validation failed (security!)`,
           code: {
             language: "cpp",
             starter: `#include <iostream>
@@ -341,15 +354,15 @@ public:
 
 int main() {
     // Test cases
-    std::cout << "=== Testing Username Validation ===\\n";
+    std::cout << "=== Testing Username Validation ===" << std::endl;
     // TODO: Test valid and invalid usernames
     
     
-    std::cout << "\\n=== Testing Email Validation ===\\n";
+    std::cout << "\\n=== Testing Email Validation ===" << std::endl;
     // TODO: Test valid and invalid emails
     
     
-    std::cout << "\\n=== Testing Password Validation ===\\n";
+    std::cout << "\\n=== Testing Password Validation ===" << std::endl;
     // TODO: Test valid and invalid passwords
     
     
@@ -419,21 +432,21 @@ public:
 };
 
 int main() {
-    std::cout << "=== Testing Username Validation ===\\n";
-    std::cout << "user123: " << (InputValidator::validateUsername("user123") ? "PASS" : "FAIL") << "\\n";
-    std::cout << "ab: " << (InputValidator::validateUsername("ab") ? "PASS" : "FAIL") << " (too short)\\n";
-    std::cout << "user@123: " << (InputValidator::validateUsername("user@123") ? "PASS" : "FAIL") << " (invalid char)\\n";
+    std::cout << "=== Testing Username Validation ===" << std::endl;
+    std::cout << "user123: " << (InputValidator::validateUsername("user123") ? "PASS" : "FAIL") << std::endl;
+    std::cout << "ab: " << (InputValidator::validateUsername("ab") ? "PASS" : "FAIL") << " (too short)" << std::endl;
+    std::cout << "user@123: " << (InputValidator::validateUsername("user@123") ? "PASS" : "FAIL") << " (invalid char)" << std::endl;
     
-    std::cout << "\\n=== Testing Email Validation ===\\n";
-    std::cout << "user@example.com: " << (InputValidator::validateEmail("user@example.com") ? "PASS" : "FAIL") << "\\n";
-    std::cout << "invalid.email: " << (InputValidator::validateEmail("invalid.email") ? "PASS" : "FAIL") << " (no @)\\n";
-    std::cout << "user@: " << (InputValidator::validateEmail("user@") ? "PASS" : "FAIL") << " (incomplete)\\n";
+    std::cout << "\\n=== Testing Email Validation ===" << std::endl;
+    std::cout << "user@example.com: " << (InputValidator::validateEmail("user@example.com") ? "PASS" : "FAIL") << std::endl;
+    std::cout << "invalid.email: " << (InputValidator::validateEmail("invalid.email") ? "PASS" : "FAIL") << " (no @)" << std::endl;
+    std::cout << "user@: " << (InputValidator::validateEmail("user@") ? "PASS" : "FAIL") << " (incomplete)" << std::endl;
     
-    std::cout << "\\n=== Testing Password Validation ===\\n";
-    std::cout << "Pass123!: " << (InputValidator::validatePassword("Pass123!") ? "PASS" : "FAIL") << "\\n";
-    std::cout << "short: " << (InputValidator::validatePassword("short") ? "PASS" : "FAIL") << " (too short)\\n";
-    std::cout << "alllowercase123!: " << (InputValidator::validatePassword("alllowercase123!") ? "PASS" : "FAIL") << " (no uppercase)\\n";
-    std::cout << "NoDigits!: " << (InputValidator::validatePassword("NoDigits!") ? "PASS" : "FAIL") << " (no digit)\\n";
+    std::cout << "\\n=== Testing Password Validation ===" << std::endl;
+    std::cout << "Pass123!: " << (InputValidator::validatePassword("Pass123!") ? "PASS" : "FAIL") << std::endl;
+    std::cout << "short: " << (InputValidator::validatePassword("short") ? "PASS" : "FAIL") << " (too short)" << std::endl;
+    std::cout << "alllowercase123!: " << (InputValidator::validatePassword("alllowercase123!") ? "PASS" : "FAIL") << " (no uppercase)" << std::endl;
+    std::cout << "NoDigits!: " << (InputValidator::validatePassword("NoDigits!") ? "PASS" : "FAIL") << " (no digit)" << std::endl;
     
     return 0;
 }`,
@@ -498,15 +511,15 @@ int main() {
               explanation: "ASLR (Address Space Layout Randomization) randomizes memory addresses, making it harder for attackers to predict where code and data will be located."
             },
             {
-              question: "What's the secure way to handle authentication errors?",
+              question: "What should you do when authentication fails?",
               options: [
-                "Tell user exactly what went wrong",
-                "Return the same generic error for all failures",
-                "Display detailed debug information",
-                "Show database error messages"
+                "Grant partial access",
+                "Log the error and grant access",
+                "Fail securely by denying access",
+                "Retry automatically"
               ],
-              correctAnswer: "b",
-              explanation: "Return generic errors for authentication failures to avoid giving attackers information about valid usernames, password requirements, etc."
+              correctAnswer: "c",
+              explanation: "When authentication or any security check fails, always fail securely by denying access rather than granting it, even if an error occurred."
             }
           ],
         },
@@ -526,12 +539,48 @@ int main() {
         content: {
           markdown: `# Introduction to Fuzzing
 
-Fuzzing is automated testing that feeds random/malformed data to find bugs.
+## What is Fuzzing?
+
+Fuzzing is an automated software testing technique that feeds random, malformed, or unexpected data to a program to find bugs, crashes, and security vulnerabilities.
 
 ## Types of Fuzzing
-- Mutation-based fuzzing
-- Generation-based fuzzing
-- Coverage-guided fuzzing`,
+
+### Mutation-Based Fuzzing
+
+Starts with valid inputs and mutates them:
+
+- Flip random bits
+- Change random bytes
+- Insert/delete data
+- Swap bytes around
+
+### Generation-Based Fuzzing
+
+Creates inputs from scratch based on format specifications:
+
+- Understands file format
+- Generates syntactically valid inputs
+- Tests semantic edge cases
+
+### Coverage-Guided Fuzzing
+
+Uses code coverage feedback to guide input generation:
+
+- Monitors execution paths
+- Generates inputs that explore new code
+- Most effective modern approach
+
+## Key Benefits
+
+**Finds edge cases** that humans miss in testing.
+
+**Automated discovery** of security vulnerabilities.
+
+**Scalable testing** can run continuously.
+
+**No assumptions needed** about what might go wrong.
+
+Next, we'll explore exploit mitigation techniques.`,
         },
       },
     ],
@@ -549,13 +598,58 @@ Fuzzing is automated testing that feeds random/malformed data to find bugs.
         content: {
           markdown: `# Exploit Mitigation Techniques
 
-Layer defense mechanisms to prevent exploitation.
+## Layered Defense Mechanisms
+
+Modern systems employ multiple exploit mitigation techniques to prevent successful attacks even when vulnerabilities exist.
 
 ## Key Mitigations
-- ASLR
-- Stack canaries
-- DEP/NX
-- Control Flow Integrity`,
+
+### ASLR (Address Space Layout Randomization)
+
+Randomizes memory addresses to prevent return-to-libc and ROP attacks:
+
+\`\`\`bash
+# Enable ASLR in compilation
+g++ -fPIE -pie program.cpp
+\`\`\`
+
+### Stack Canaries
+
+Detects buffer overflows by placing guard values on the stack:
+
+\`\`\`bash
+# Enable stack protection
+g++ -fstack-protector-strong program.cpp
+\`\`\`
+
+### DEP/NX (Data Execution Prevention)
+
+Marks memory regions as non-executable:
+
+\`\`\`bash
+# Enable non-executable stack
+g++ -Wl,-z,noexecstack program.cpp
+\`\`\`
+
+### Control Flow Integrity
+
+Validates that control flow follows legitimate paths:
+
+- Prevents arbitrary code execution
+- Validates indirect jumps and calls
+- Enforces intended program structure
+
+## Best Practices
+
+**Enable all available mitigations** during compilation.
+
+**Keep systems updated** for latest security patches.
+
+**Use modern compilers** that support latest protections.
+
+**Test with multiple configurations** to verify mitigations work.
+
+This completes the Hardening and Fuzzing path.`,
         },
       },
     ],
