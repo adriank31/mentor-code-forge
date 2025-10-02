@@ -6,10 +6,25 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+interface TestCase {
+  input: string;
+  expectedOutput: string;
+  hidden?: boolean;
+}
+
+interface TestResult {
+  passed: boolean;
+  input: string;
+  expectedOutput: string;
+  actualOutput: string;
+  hidden?: boolean;
+}
+
 interface RunCodeRequest {
   language: 'c' | 'cpp';
   source: string;
   puzzleSlug: string;
+  testCases?: TestCase[];
 }
 
 interface RunCodeResponse {
@@ -17,6 +32,8 @@ interface RunCodeResponse {
   stderr: string;
   exitCode: number;
   timedOut?: boolean;
+  testResults?: TestResult[];
+  allTestsPassed?: boolean;
 }
 
 serve(async (req) => {
@@ -48,7 +65,7 @@ serve(async (req) => {
       });
     }
 
-    const { language, source, puzzleSlug }: RunCodeRequest = await req.json();
+    const { language, source, puzzleSlug, testCases }: RunCodeRequest = await req.json();
 
     console.log(`Running ${language} code for puzzle ${puzzleSlug} by user ${user.id}`);
 
@@ -57,10 +74,72 @@ serve(async (req) => {
     const judge0Key = Deno.env.get('JUDGE0_KEY');
 
     if (judge0Url && judge0Key) {
-      // Use Judge0 for real code execution
-      const languageId = language === 'c' ? 50 : 54; // 50=C (GCC 9.2.0), 54=C++ (GCC 9.2.0)
+      const languageId = language === 'c' ? 50 : 54;
       
-      // Submit code
+      // If test cases are provided, run against each one
+      if (testCases && testCases.length > 0) {
+        const testResults: TestResult[] = [];
+        let allPassed = true;
+
+        for (const testCase of testCases) {
+          const submitResponse = await fetch(`${judge0Url}/submissions?base64_encoded=false&wait=true`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-RapidAPI-Key': judge0Key,
+            },
+            body: JSON.stringify({
+              source_code: source,
+              language_id: languageId,
+              stdin: testCase.input,
+            }),
+          });
+
+          if (!submitResponse.ok) {
+            throw new Error('Judge0 submission failed');
+          }
+
+          const result = await submitResponse.json();
+          const actualOutput = (result.stdout || '').trim();
+          const expectedOutput = testCase.expectedOutput.trim();
+          const passed = actualOutput === expectedOutput;
+          
+          if (!passed) allPassed = false;
+
+          testResults.push({
+            passed,
+            input: testCase.input,
+            expectedOutput: testCase.expectedOutput,
+            actualOutput: actualOutput,
+            hidden: testCase.hidden,
+          });
+        }
+
+        // Auto-record completion if all tests passed
+        if (allPassed) {
+          await supabase.from('puzzle_completions').upsert({
+            user_id: user.id,
+            puzzle_slug: puzzleSlug,
+            completed_at: new Date().toISOString(),
+          }, {
+            onConflict: 'user_id,puzzle_slug'
+          });
+        }
+
+        const response: RunCodeResponse = {
+          stdout: '',
+          stderr: '',
+          exitCode: allPassed ? 0 : 1,
+          testResults,
+          allTestsPassed: allPassed,
+        };
+
+        return new Response(JSON.stringify(response), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      // No test cases - run code once without input
       const submitResponse = await fetch(`${judge0Url}/submissions?base64_encoded=false&wait=true`, {
         method: 'POST',
         headers: {
@@ -83,8 +162,8 @@ serve(async (req) => {
       const response: RunCodeResponse = {
         stdout: result.stdout || '',
         stderr: result.stderr || result.compile_output || '',
-        exitCode: result.status?.id === 3 ? 0 : 1, // 3 = Accepted
-        timedOut: result.status?.id === 5, // 5 = Time Limit Exceeded
+        exitCode: result.status?.id === 3 ? 0 : 1,
+        timedOut: result.status?.id === 5,
       };
 
       return new Response(JSON.stringify(response), {

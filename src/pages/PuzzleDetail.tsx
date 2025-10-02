@@ -63,19 +63,32 @@ export default function PuzzleDetail() {
   };
 
   const handleRun = async () => {
-    if (!user || !slug) return;
+    if (!user || !slug || !puzzle) return;
     
     setRunning(true);
     setRunResult(null);
     
     try {
       const { data, error } = await supabase.functions.invoke('run-code', {
-        body: { language, source: code, puzzleSlug: slug }
+        body: { 
+          language, 
+          source: code, 
+          puzzleSlug: slug,
+          testCases: puzzle.testCases 
+        }
       });
 
       if (error) throw error;
 
       setRunResult(data);
+
+      // Show success toast if all tests passed
+      if (data.allTestsPassed) {
+        toast({
+          title: '🎉 All tests passed!',
+          description: 'Your solution is correct and has been saved.',
+        });
+      }
     } catch (error) {
       console.error('Error running code:', error);
       toast({
@@ -302,12 +315,14 @@ export default function PuzzleDetail() {
 
               {/* Results Panel */}
               {runResult && (
-                <div className="border-t max-h-[300px] overflow-y-auto">
+                <div className="border-t max-h-[400px] overflow-y-auto">
                   <RunResult
                     stdout={runResult.stdout}
                     stderr={runResult.stderr}
                     exitCode={runResult.exitCode}
                     timedOut={runResult.timedOut}
+                    testResults={runResult.testResults}
+                    allTestsPassed={runResult.allTestsPassed}
                   />
                 </div>
               )}

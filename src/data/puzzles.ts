@@ -1,3 +1,9 @@
+export interface TestCase {
+  input: string;
+  expectedOutput: string;
+  hidden?: boolean;
+}
+
 export interface Puzzle {
   slug: string;
   title: string;
@@ -11,6 +17,7 @@ export interface Puzzle {
   sampleOutput?: string;
   hints: string[];
   proOnly?: boolean;
+  testCases: TestCase[];
 }
 
 export const puzzles: Puzzle[] = [
@@ -29,6 +36,13 @@ export const puzzles: Puzzle[] = [
       "Consider the sign of the operands and result",
       "Overflow occurs when adding two positive numbers yields negative",
       "Use comparison logic before performing the operation"
+    ],
+    testCases: [
+      { input: "2147483647 1", expectedOutput: "OVERFLOW" },
+      { input: "100 200", expectedOutput: "300" },
+      { input: "-2147483648 -1", expectedOutput: "OVERFLOW", hidden: true },
+      { input: "0 0", expectedOutput: "0", hidden: true },
+      { input: "1000000 2000000", expectedOutput: "3000000", hidden: true }
     ]
   },
   {
@@ -46,6 +60,13 @@ export const puzzles: Puzzle[] = [
       "Use Floyd's cycle detection algorithm (tortoise and hare)",
       "Track visited indices to detect cycles",
       "Handle out-of-bounds indices as terminal nodes"
+    ],
+    testCases: [
+      { input: "1 2 3 1", expectedOutput: "cycle at index 1" },
+      { input: "1 2 -1", expectedOutput: "terminal" },
+      { input: "0", expectedOutput: "cycle at index 0", hidden: true },
+      { input: "1 2 3 4 5", expectedOutput: "terminal", hidden: true },
+      { input: "2 3 1 4", expectedOutput: "cycle at index 1", hidden: true }
     ]
   },
   {
@@ -64,7 +85,14 @@ export const puzzles: Puzzle[] = [
       "Track the state of each allocated block",
       "Detect use-after-free by checking block status"
     ],
-    proOnly: true
+    proOnly: true,
+    testCases: [
+      { input: "alloc 10\nfree 0\nalloc 10\nuse 0", expectedOutput: "double-use detected" },
+      { input: "alloc 20\nalloc 30\nfree 0", expectedOutput: "ok" },
+      { input: "alloc 10\nfree 0\nalloc 5", expectedOutput: "reused block 0", hidden: true },
+      { input: "alloc 10\nalloc 10\nfree 1\nuse 1", expectedOutput: "double-use detected", hidden: true },
+      { input: "alloc 100", expectedOutput: "ok", hidden: true }
+    ]
   },
   {
     slug: "xor-encode",
@@ -81,6 +109,13 @@ export const puzzles: Puzzle[] = [
       "XOR is its own inverse: x ^ k ^ k = x",
       "Zero key means no encryption",
       "Handle null terminators carefully"
+    ],
+    testCases: [
+      { input: "HELLO 90", expectedOutput: "HELLO" },
+      { input: "TEST 0", expectedOutput: "TEST" },
+      { input: "ABC 255", expectedOutput: "ABC", hidden: true },
+      { input: "WORLD 42", expectedOutput: "WORLD", hidden: true },
+      { input: "XYZ 128", expectedOutput: "XYZ", hidden: true }
     ]
   },
   {
@@ -98,6 +133,13 @@ export const puzzles: Puzzle[] = [
       "Use bitwise OR for set, XOR for flip, AND with complement for clear",
       "Create range masks using shifts and subtraction",
       "Test with edge cases at bit boundaries"
+    ],
+    testCases: [
+      { input: "0\nset 0 7\nflip 4 11\nclear 0 3", expectedOutput: "0x00000FF0" },
+      { input: "0\nset 0 15", expectedOutput: "0x0000FFFF" },
+      { input: "0xFFFFFFFF\nclear 0 31", expectedOutput: "0x00000000", hidden: true },
+      { input: "0\nset 0 7\nflip 0 7", expectedOutput: "0x00000000", hidden: true },
+      { input: "0\nset 16 23", expectedOutput: "0x00FF0000", hidden: true }
     ]
   },
   {
@@ -116,7 +158,14 @@ export const puzzles: Puzzle[] = [
       "Consider tail recursion optimization",
       "Account for compiler-specific stack usage"
     ],
-    proOnly: true
+    proOnly: true,
+    testCases: [
+      { input: "fib 1000", expectedOutput: "997" },
+      { input: "factorial 500", expectedOutput: "500" },
+      { input: "fibonacci 10000", expectedOutput: "9997", hidden: true },
+      { input: "recursive 100", expectedOutput: "100", hidden: true },
+      { input: "nested 5000", expectedOutput: "4995", hidden: true }
+    ]
   },
   {
     slug: "string-rotation",
@@ -133,6 +182,13 @@ export const puzzles: Puzzle[] = [
       "A rotation means s2 is a substring of s1+s1",
       "Use strstr or implement KMP for linear search",
       "Check lengths first as a quick filter"
+    ],
+    testCases: [
+      { input: "waterbottle\nerbottlewat", expectedOutput: "true" },
+      { input: "hello\nworld", expectedOutput: "false" },
+      { input: "abc\nbca", expectedOutput: "true", hidden: true },
+      { input: "test\ntest", expectedOutput: "true", hidden: true },
+      { input: "rotation\nnotarot", expectedOutput: "false", hidden: true }
     ]
   },
   {
@@ -150,6 +206,13 @@ export const puzzles: Puzzle[] = [
       "Sum all 16-bit words and add carry bits",
       "Take one's complement for final checksum",
       "Handle odd-length data by padding"
+    ],
+    testCases: [
+      { input: "0x12 0x34 0x56 0x78\n0xBBCC", expectedOutput: "valid" },
+      { input: "0xFF 0xFF\n0x0000", expectedOutput: "valid" },
+      { input: "0x12 0x34\n0xFFFF", expectedOutput: "invalid", hidden: true },
+      { input: "0x00 0x00\n0xFFFF", expectedOutput: "valid", hidden: true },
+      { input: "0xAB 0xCD 0xEF\n0x1234", expectedOutput: "invalid", hidden: true }
     ]
   },
   {
@@ -167,6 +230,13 @@ export const puzzles: Puzzle[] = [
       "Check for overflow before performing addition",
       "Clamp to INT_MAX or INT_MIN on overflow",
       "Consider both positive and negative overflow cases"
+    ],
+    testCases: [
+      { input: "2147483647 100", expectedOutput: "2147483647" },
+      { input: "100 200", expectedOutput: "300" },
+      { input: "-2147483648 -100", expectedOutput: "-2147483648", hidden: true },
+      { input: "1000000 2000000", expectedOutput: "3000000", hidden: true },
+      { input: "2147483600 100", expectedOutput: "2147483647", hidden: true }
     ]
   },
   {
@@ -185,6 +255,13 @@ export const puzzles: Puzzle[] = [
       "XOR with mask for range flips",
       "For palindrome, compare bits from both ends"
     ],
-    proOnly: true
+    proOnly: true,
+    testCases: [
+      { input: "10110110\ncount 0 7\nflip 2 5\npalindrome", expectedOutput: "5\n10001110\nfalse" },
+      { input: "11111111\ncount 0 7", expectedOutput: "8" },
+      { input: "10101010\npalindrome", expectedOutput: "false", hidden: true },
+      { input: "11011011\npalindrome", expectedOutput: "true", hidden: true },
+      { input: "00000000\nflip 0 7", expectedOutput: "11111111", hidden: true }
+    ]
   }
 ];
