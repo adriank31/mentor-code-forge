@@ -81,6 +81,7 @@ export type Database = {
         Row: {
           created_at: string | null
           email: string
+          has_seen_limit_dialog: boolean | null
           id: string
           is_pro: boolean | null
           stripe_customer_id: string | null
@@ -91,6 +92,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           email: string
+          has_seen_limit_dialog?: boolean | null
           id: string
           is_pro?: boolean | null
           stripe_customer_id?: string | null
@@ -101,6 +103,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           email?: string
+          has_seen_limit_dialog?: boolean | null
           id?: string
           is_pro?: boolean | null
           stripe_customer_id?: string | null
@@ -242,6 +245,39 @@ export type Database = {
           id?: string
           puzzle_slug?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      weekly_usage: {
+        Row: {
+          created_at: string
+          id: string
+          labs_completed: number
+          projects_started: number
+          puzzles_completed: number
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          labs_completed?: number
+          projects_started?: number
+          puzzles_completed?: number
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          labs_completed?: number
+          projects_started?: number
+          puzzles_completed?: number
+          updated_at?: string
+          user_id?: string
+          week_start?: string
         }
         Relationships: []
       }

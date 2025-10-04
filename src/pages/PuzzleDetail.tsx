@@ -13,6 +13,8 @@ import { useToast } from "@/hooks/use-toast";
 import { AuthGate } from "@/components/AuthGate";
 import { ProGate } from "@/components/ProGate";
 import { RunResult } from "@/components/RunResult";
+import { LimitReachedDialog } from "@/components/LimitReachedDialog";
+import { useUsageLimits } from "@/hooks/useUsageLimits";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getDefaultSource, storageKey, debouncedSave, type Language } from "@/lib/editor";
@@ -30,6 +32,16 @@ export default function PuzzleDetail() {
   const [saved, setSaved] = useState(true);
   const { user } = useAuth();
   const { toast } = useToast();
+  const { checkLimit, incrementUsage, limitReached, limitType, dismissLimitDialog, usage, limits, isPro } = useUsageLimits();
+  const [canAccess, setCanAccess] = useState(true);
+
+  // Check limit on mount for free users
+  useEffect(() => {
+    if (user && !isPro && !puzzle?.proOnly) {
+      const hasAccess = checkLimit('puzzles');
+      setCanAccess(hasAccess);
+    }
+  }, [user, isPro, puzzle?.proOnly]);
 
   // Load code from localStorage on mount
   useEffect(() => {
@@ -84,6 +96,10 @@ export default function PuzzleDetail() {
 
       // Show success toast if all tests passed
       if (data.allTestsPassed) {
+        // Increment usage for free users
+        if (!isPro) {
+          await incrementUsage('puzzles');
+        }
         toast({
           title: '🎉 All tests passed!',
           description: 'Your solution is correct and has been saved.',
@@ -144,8 +160,46 @@ export default function PuzzleDetail() {
     );
   }
 
+  // Show limit dialog if limit is reached
+  if (!canAccess && !isPro && !puzzle.proOnly) {
+    return (
+      <AuthGate>
+        <LimitReachedDialog
+          open={limitReached}
+          onClose={dismissLimitDialog}
+          limitType={limitType}
+          currentUsage={usage.puzzles}
+          limit={limits.puzzles}
+        />
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6">
+          <Card className="max-w-md">
+            <CardHeader className="text-center">
+              <CardTitle>Weekly Limit Reached</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                You've used {usage.puzzles} out of {limits.puzzles} free practice puzzles this week.
+              </p>
+              <Button onClick={() => window.location.href = '/pricing'}>
+                Upgrade to Pro for Unlimited Access
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </AuthGate>
+    );
+  }
+
   const editorContent = (
-    <div className="h-[calc(100vh-4rem)] flex flex-col">
+    <>
+      <LimitReachedDialog
+        open={limitReached}
+        onClose={dismissLimitDialog}
+        limitType={limitType}
+        currentUsage={usage.puzzles}
+        limit={limits.puzzles}
+      />
+      <div className="h-[calc(100vh-4rem)] flex flex-col">
       <ResizablePanelGroup direction="horizontal" className="flex-1">
         {/* Left Panel - Problem Description */}
         <ResizablePanel defaultSize={40} minSize={30}>
@@ -330,7 +384,8 @@ export default function PuzzleDetail() {
           </AuthGate>
         </ResizablePanel>
       </ResizablePanelGroup>
-    </div>
+      </div>
+    </>
   );
 
   const gatedContent = puzzle.proOnly ? <ProGate>{editorContent}</ProGate> : editorContent;

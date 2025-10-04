@@ -12,57 +12,73 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 const faqItems = [
   {
-    question: "How does billing work?",
-    answer: "We use Stripe for secure billing. You'll be charged monthly or yearly based on your chosen plan. All subscriptions auto-renew until canceled."
-  },
-  {
-    question: "Can I get a refund?",
-    answer: "Sorry for the inconvenience but we don't offer refunds. Please contact our support if you have any problems."
-  },
-  {
-    question: "Do you offer student discounts?",
-    answer: "We offer 15% off the Pro plan for students with valid .edu emails. Contact our support to verify."
+    question: "What's included in the Pro plan?",
+    answer: "Pro includes unlimited access to all practice puzzles, labs, and projects, plus priority support and a completion badge."
   },
   {
     question: "Can I cancel anytime?",
-    answer: "Absolutely. You can cancel your subscription at any time from your account settings. You'll retain access until the end of your billing period."
+    answer: "Yes, you can cancel your Pro subscription at any time. You'll retain access until the end of your billing period."
   },
   {
-    question: "What payment methods do you accept?",
-    answer: "We accept all major credit cards (Visa, MasterCard, American Express) and digital wallets through our secure Stripe integration."
+    question: "What are the free tier limits?",
+    answer: "Free users can access 7 practice puzzles, 3 lab exercises, and 2 projects per week. These limits reset every Sunday."
+  },
+  {
+    question: "Do you offer refunds?",
+    answer: "We offer a 7-day money-back guarantee. If you're not satisfied, contact us for a full refund."
   }
 ];
 
 const features = [
   {
-    name: "Access to Learning Paths",
-    free: "2 paths (Foundations, Memory & Lifetimes)",
-    pro: "All 5 paths + future releases"
-  },
-  {
-    name: "Lab Exercises",
-    free: "Basic beginner labs",
-    pro: "All labs (35+ advanced scenarios)"
-  },
-  {
-    name: "AI Explanations",
-    free: "5 per month",
+    name: "Practice Puzzles",
+    free: "7 per week",
     pro: "Unlimited"
   },
   {
-    name: "Fuzz Testing",
-    free: false,
-    pro: true
+    name: "Lab Exercises",
+    free: "3 per week",
+    pro: "Unlimited"
   },
   {
-    name: "Community Badge",
-    free: false,
-    pro: "Priority badge"
+    name: "Projects",
+    free: "2 per week",
+    pro: "Unlimited"
   },
   {
-    name: "Support",
-    free: "Community forums",
-    pro: "Priority support"
+    name: "Code Execution",
+    free: "✓",
+    pro: "✓"
+  },
+  {
+    name: "Progress Tracking",
+    free: "✓",
+    pro: "✓"
+  },
+  {
+    name: "Community Access",
+    free: "✓",
+    pro: "✓"
+  },
+  {
+    name: "Priority Support",
+    free: "—",
+    pro: "✓"
+  },
+  {
+    name: "Completion Badge",
+    free: "—",
+    pro: "✓"
+  },
+  {
+    name: "Advanced Labs with Fuzzing",
+    free: "—",
+    pro: "✓"
+  },
+  {
+    name: "Exclusive Security Projects",
+    free: "—",
+    pro: "✓"
   }
 ];
 

@@ -29,6 +29,8 @@ import {
 import { projects } from "@/data/projects";
 import { ProGate } from "@/components/ProGate";
 import { AuthGate } from "@/components/AuthGate";
+import { LimitReachedDialog } from "@/components/LimitReachedDialog";
+import { useUsageLimits } from "@/hooks/useUsageLimits";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -49,11 +51,25 @@ export default function ProjectDetail() {
   const [submissionDescription, setSubmissionDescription] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [makePublic, setMakePublic] = useState(false);
+  const { checkLimit, incrementUsage, limitReached, limitType, dismissLimitDialog, usage, limits, isPro } = useUsageLimits();
+  const [canAccess, setCanAccess] = useState(true);
+
+  // Check limit on mount for free users
+  useEffect(() => {
+    if (user && !isPro && !project?.proOnly) {
+      const hasAccess = checkLimit('projects');
+      setCanAccess(hasAccess);
+    }
+  }, [user, isPro, project?.proOnly]);
 
   useEffect(() => {
     if (user && slug && project?.milestones) {
       loadMilestoneProgress();
       loadSubmissions();
+      // Increment project usage when user starts a project
+      if (!isPro) {
+        incrementUsage('projects');
+      }
     }
   }, [user, slug, project]);
 
@@ -237,8 +253,46 @@ export default function ProjectDetail() {
   const totalMilestones = project.milestones?.length || 0;
   const progressPercentage = totalMilestones > 0 ? (completedMilestones / totalMilestones) * 100 : 0;
 
+  // Show limit dialog if limit is reached
+  if (!canAccess && !isPro && !project.proOnly) {
+    return (
+      <AuthGate>
+        <LimitReachedDialog
+          open={limitReached}
+          onClose={dismissLimitDialog}
+          limitType={limitType}
+          currentUsage={usage.projects}
+          limit={limits.projects}
+        />
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-6">
+          <Card className="max-w-md">
+            <CardHeader className="text-center">
+              <CardTitle>Weekly Limit Reached</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                You've started {usage.projects} out of {limits.projects} free projects this week.
+              </p>
+              <Button onClick={() => window.location.href = '/pricing'}>
+                Upgrade to Pro for Unlimited Access
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </AuthGate>
+    );
+  }
+
   const content = (
-    <div className="h-[calc(100vh-4rem)] overflow-y-auto">
+    <>
+      <LimitReachedDialog
+        open={limitReached}
+        onClose={dismissLimitDialog}
+        limitType={limitType}
+        currentUsage={usage.projects}
+        limit={limits.projects}
+      />
+      <div className="h-[calc(100vh-4rem)] overflow-y-auto">
       <Tabs defaultValue="overview" className="h-full">
         <div className="sticky top-0 z-10 bg-background border-b">
           <div className="p-4">
@@ -647,7 +701,8 @@ export default function ProjectDetail() {
           </TabsContent>
         </div>
       </Tabs>
-    </div>
+      </div>
+    </>
   );
 
   const gatedContent = project?.proOnly ? <ProGate>{content}</ProGate> : content;
