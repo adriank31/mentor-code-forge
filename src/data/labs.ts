@@ -2154,8 +2154,8 @@ int main() {
     cmd.erase(std::find_if(cmd.rbegin(), cmd.rend(),
         [](unsigned char ch) { return !std::isspace(ch); }).base(), cmd.end());
 
-    // Check for forbidden characters (note the escaped backtick in the TS template literal)
-    if (cmd.find_first_of(";&|$\\`>") != std::string::npos) {
+    // Reject obvious metacharacters (avoid raw backtick in this TS literal)
+    if (cmd.find_first_of(";&|$>") != std::string::npos || cmd.find('\\x60') != std::string::npos) {
         std::cout << "rejected\\n";
         return 0;
     }
@@ -2211,8 +2211,8 @@ int main() {
     cmd.erase(std::find_if(cmd.rbegin(), cmd.rend(),
         [](unsigned char ch) { return !std::isspace(ch); }).base(), cmd.end());
 
-    // Reject obvious metacharacters (escape backtick in TS)
-    if (cmd.find_first_of(";&|$\\`>") != std::string::npos) {
+    // Reject obvious metacharacters (avoid raw backtick in this TS literal)
+    if (cmd.find_first_of(";&|$>") != std::string::npos || cmd.find('\\x60') != std::string::npos) {
         std::cout << "rejected\\n";
         return 0;
     }
