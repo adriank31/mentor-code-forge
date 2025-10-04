@@ -2142,14 +2142,38 @@ int main() {
     starterCode: `#include <iostream>
 #include <string>
 #include <algorithm>
+#include <cctype>
+
 int main() {
     std::string cmd;
     std::getline(std::cin, cmd);
-    // TODO: validate against whitelist and reject metacharacters
-    std::cout << "rejected\\n";
+
+    // Trim
+    cmd.erase(cmd.begin(), std::find_if(cmd.begin(), cmd.end(),
+        [](unsigned char ch) { return !std::isspace(ch); }));
+    cmd.erase(std::find_if(cmd.rbegin(), cmd.rend(),
+        [](unsigned char ch) { return !std::isspace(ch); }).base(), cmd.end());
+
+    // Check for forbidden characters (note the escaped backtick in the TS template literal)
+    if (cmd.find_first_of(";&|$\\`>") != std::string::npos) {
+        std::cout << "rejected\\n";
+        return 0;
+    }
+
+    // Normalize for comparison
+    std::transform(cmd.begin(), cmd.end(), cmd.begin(),
+        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+    // Whitelist
+    if (cmd == "help" || cmd == "status" || cmd == "version") {
+        std::cout << "ok\\n";
+    } else {
+        std::cout << "rejected\\n";
+    }
     return 0;
 }
 `,
+
     detailedInstructions: `Define a list of allowed commands: status, start, stop and restart.
 
 Read the entire input line and trim any leading or trailing whitespace.
@@ -2175,28 +2199,41 @@ Print 'accepted' or 'rejected' followed by a newline.`,
 #include <string>
 #include <algorithm>
 #include <cctype>
+#include <unordered_set>
+
 int main() {
     std::string cmd;
     std::getline(std::cin, cmd);
-    // Trim whitespace
-    cmd.erase(cmd.begin(), std::find_if(cmd.begin(), cmd.end(), [](unsigned char ch) { return !std::isspace(ch); }));
-    cmd.erase(std::find_if(cmd.rbegin(), cmd.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), cmd.end());
-    // Check for forbidden characters
-    if cmd.find_first_of(";&|$\\`>") != std::string::npos) {
-        std::cout << "rejected\n";
+
+    // Trim
+    cmd.erase(cmd.begin(), std::find_if(cmd.begin(), cmd.end(),
+        [](unsigned char ch) { return !std::isspace(ch); }));
+    cmd.erase(std::find_if(cmd.rbegin(), cmd.rend(),
+        [](unsigned char ch) { return !std::isspace(ch); }).base(), cmd.end());
+
+    // Reject obvious metacharacters (escape backtick in TS)
+    if (cmd.find_first_of(";&|$\\`>") != std::string::npos) {
+        std::cout << "rejected\\n";
         return 0;
     }
-    // Convert to lowercase for comparison
-    std::string lower = cmd;
-    std::transform(lower.begin(), lower.end(), lower.begin(), [](unsigned char c){ return std::tolower(c); });
-    if (lower == "status" || lower == "start" || lower == "stop" || lower == "restart") {
-        std::cout << "accepted\n";
+
+    // Lowercase & strict whitelist
+    std::transform(cmd.begin(), cmd.end(), cmd.begin(),
+        [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+
+    static const std::unordered_set<std::string> allowed{
+        "help", "status", "version"
+    };
+
+    if (allowed.count(cmd)) {
+        std::cout << "ok\\n";
     } else {
-        std::cout << "rejected\n";
+        std::cout << "rejected\\n";
     }
     return 0;
 }
 `,
+
     testCases: [
       { input: "status\n", expectedOutput: "accepted\n" },
       { input: "start && rm -rf /\n", expectedOutput: "rejected\n" },
