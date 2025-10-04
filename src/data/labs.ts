@@ -2182,7 +2182,7 @@ int main() {
     cmd.erase(cmd.begin(), std::find_if(cmd.begin(), cmd.end(), [](unsigned char ch) { return !std::isspace(ch); }));
     cmd.erase(std::find_if(cmd.rbegin(), cmd.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), cmd.end());
     // Check for forbidden characters
-    if (cmd.find_first_of(";&|$`>") != std::string::npos) {
+    if cmd.find_first_of(";&|$\\`>") != std::string::npos) {
         std::cout << "rejected\n";
         return 0;
     }
