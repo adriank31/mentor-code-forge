@@ -1,17 +1,10 @@
 import { Module } from "../pathModules";
 
-// This learning path introduces the core principles of safe C++ programming.
-// The modules and lessons below have been carefully written to provide
-// thorough explanations, practical examples and professional formatting.
-// Each lesson combines narrative paragraphs with concise bullet lists to
-// guide learners through the material in a clear and engaging way.
-
 export const foundationsSafeBasicsModules: Module[] = [
   {
     id: "module-1",
     title: "Introduction to Safe C++ Fundamentals",
-    description:
-      "Learn the basics of safe memory handling and why these concepts are critical to modern systems programming.",
+    description: "Learn the basics of safe memory handling and why it matters",
     lessons: [
       {
         id: "lesson-1-1",
@@ -19,46 +12,52 @@ export const foundationsSafeBasicsModules: Module[] = [
         type: "lesson",
         duration: 10,
         content: {
-          // Provide a welcoming overview of the path. The text is written as
-          // plain paragraphs and lists to render well in the current UI.
-          markdown: `Welcome to Safe C++
+          markdown: `# Welcome to Safe C++
 
-What You'll Master
+## What You'll Master
 
-Memory safety bugs are responsible for approximately 70% of high‑severity security vulnerabilities in systems software. In this comprehensive learning path you'll discover how to write C++ code that's both powerful and secure.
+Memory safety bugs are responsible for approximately **70% of high-severity security vulnerabilities** in systems software. In this comprehensive learning path, you'll discover how to write C++ code that's both powerful and secure.
 
-Why This Matters
+## Why This Matters
 
-Every day, critical software systems face threats such as:
-• Buffer overflows — writing beyond allocated memory boundaries
-• Use‑after‑free — accessing memory that's been deallocated
-• Dangling pointers — references to invalid memory locations
-• Memory leaks — failing to release allocated resources
+Every day, critical software systems face threats from:
 
-These aren't just academic concerns — they are real‑world vulnerabilities that cost companies millions and put user data at risk.
+- **Buffer overflows** - Writing beyond allocated memory boundaries
+- **Use-after-free** - Accessing memory that's been deallocated
+- **Dangling pointers** - References to invalid memory locations  
+- **Memory leaks** - Failing to release allocated resources
 
-Your Learning Journey
+These aren't just academic concerns—they're real-world vulnerabilities that cost companies millions and put user data at risk.
 
-Throughout this path you'll explore four essential modules that build upon each other to create a comprehensive understanding of safe C++ programming.
+## Your Learning Journey
 
-Module 1: Safe Fundamentals
-Learn the core principles of safe memory handling, including pointer safety, initialization, understanding memory addresses, null pointer handling and basic memory management techniques.
+Throughout this path, you'll explore four essential modules that build upon each other to create a comprehensive understanding of safe C++ programming.
 
-Module 2: Array and String Operations
-Master bounds checking techniques, safe string handling, modern C++ containers and buffer overflow prevention strategies that protect your code from common vulnerabilities.
+### Module 1: Safe Fundamentals
 
-Module 3: Smart Pointers
-Discover RAII principles and learn how to use unique_ptr for exclusive ownership, shared_ptr for shared ownership and weak_ptr to break circular dependencies.
+Learn the core principles of safe memory handling, including pointer safety, initialization, understanding memory addresses, null pointer handling, and basic memory management techniques.
 
-Module 4: Value Semantics
-Understand the difference between copy and move semantics, learn the Rule of Zero/Three/Five, master perfect forwarding and apply const correctness throughout your code.
+### Module 2: Array and String Operations
 
-How You'll Learn
+Master bounds checking techniques, safe string handling, modern C++ containers, and buffer overflow prevention strategies that protect your code from common vulnerabilities.
+
+### Module 3: Smart Pointers
+
+Discover RAII principles and learn how to use unique_ptr for exclusive ownership, shared_ptr for shared ownership, and weak_ptr to break circular dependencies.
+
+### Module 4: Value Semantics
+
+Understand the difference between copy and move semantics, learn the Rule of Zero/Three/Five, master perfect forwarding, and apply const correctness throughout your code.
+
+## How You'll Learn
 
 Each module combines three types of learning experiences:
-• Theory lessons — clear, detailed explanations with practical examples that demonstrate concepts in action.
-• Code challenges — hands‑on practice writing real code that applies what you've learned in practical scenarios.
-• Quizzes — test your understanding and reinforce key concepts through carefully designed questions.
+
+**Theory Lessons** - Clear, detailed explanations with practical examples that demonstrate concepts in action.
+
+**Code Challenges** - Hands-on practice writing real code that applies what you've learned in practical scenarios.
+
+**Quizzes** - Test your understanding and reinforce key concepts through carefully designed questions.
 
 Let's begin your journey to writing safer, more reliable C++ code.`,
         },
@@ -69,60 +68,158 @@ Let's begin your journey to writing safer, more reliable C++ code.`,
         type: "lesson",
         duration: 20,
         content: {
-          // Explain pointers in plain language with examples and cautionary notes.
-          markdown: `Understanding Memory and Pointers
+          markdown: `# Understanding Memory and Pointers
 
-Computer memory can be thought of as a vast array of numbered slots. Each slot has a unique address and stores a small amount of data. A **pointer** is a variable that stores one of these addresses instead of a direct value. By storing an address, pointers let you indirectly access and modify data stored elsewhere in memory.
+## What is Memory?
 
-Declaring and Using Pointers
+Think of computer memory as a massive array of numbered boxes. Each box has a unique address (like a street address), can store a specific amount of data, and can be read from or written to.
 
-To declare a pointer, use the * symbol with the type. You can place the asterisk next to the type or variable name; both styles are valid. The address‑of operator (&) returns a variable's memory address, and the dereference operator (*) accesses the value at that address. For example:
+## What is a Pointer?
 
-```cpp
-int value = 42;    // regular variable storing 42
-int* ptr = &value; // pointer storing the address of value
-std::cout << *ptr; // prints 42 (the value at that address)
-```
+A **pointer** is simply a variable that stores a memory address. Instead of holding data directly, it "points to" where the data lives in memory.
 
-Pointer Declaration Styles
+\`\`\`cpp
+int value = 42;        // Regular variable storing 42
+int* ptr = &value;     // Pointer storing the address of value
+\`\`\`
 
-```cpp
-int* ptr1;   // common style
-int *ptr2;   // alternative style
-int * ptr3;  // also valid
+### The Address-of Operator
 
-// Declaring multiple pointers on one line can be confusing
-int *a, *b;   // both a and b are pointers
-int* c, d;    // c is a pointer, d is an int (be careful!)
-```
+The \`&\` operator gives you the memory address of a variable:
 
-Best practice: declare one pointer per line to avoid confusion.
+\`\`\`cpp
+int num = 100;
+int* address = &num;   // Get address of num
+std::cout << "Value: " << num << std::endl;
+std::cout << "Address: " << address << std::endl;
+\`\`\`
 
-Null and Uninitialized Pointers
+### The Dereference Operator
 
-A null pointer doesn't point to any valid memory location. Always initialize your pointers to either a valid address or to `nullptr`:
+The \`*\` operator lets you access the value at a pointer's address:
 
-```cpp
-int* ptr = nullptr; // pointer intentionally points nowhere
+\`\`\`cpp
+int value = 42;
+int* ptr = &value;
+std::cout << *ptr << std::endl;  // Prints: 42
+
+*ptr = 100;  // Changes value to 100
+std::cout << value << std::endl;  // Prints: 100
+\`\`\`
+
+## Pointer Declaration Syntax
+
+When declaring pointers, the asterisk can be placed in different positions, but they all mean the same thing:
+
+\`\`\`cpp
+int* ptr1;    // Common style
+int *ptr2;    // Alternative style
+int * ptr3;   // Also valid
+
+// Declaring multiple pointers
+int *a, *b;   // Both are pointers
+int* c, d;    // c is pointer, d is int (careful!)
+\`\`\`
+
+**Best Practice**: Declare one pointer per line to avoid confusion.
+
+## Null Pointers
+
+A null pointer doesn't point to any valid memory location. It's important to initialize pointers before use:
+
+\`\`\`cpp
+int* ptr = nullptr;  // Modern C++ way
+
 if (ptr == nullptr) {
     std::cout << "Pointer is null" << std::endl;
 }
-```
+\`\`\`
 
-Uninitialized pointers contain random garbage values and can cause crashes or security vulnerabilities if dereferenced.
+### Why Initialize Pointers?
 
-Common Pitfalls
+Uninitialized pointers contain random garbage values and can cause crashes or security vulnerabilities:
 
-• **Dereferencing null pointers** will crash your program. Always check before dereferencing.
-• **Dangling pointers** refer to memory that has been freed or gone out of scope. Avoid returning addresses of local variables.
-• **Memory leaks** occur when dynamically allocated memory isn't freed. Every `new` must have a corresponding `delete`.
+\`\`\`cpp
+// DANGEROUS - Uninitialized pointer
+int* badPtr;
+*badPtr = 42;  // CRASH! Unknown address
 
-Key Takeaways
+// SAFE - Initialized pointer
+int* goodPtr = nullptr;
+if (goodPtr != nullptr) {
+    *goodPtr = 42;
+}
+\`\`\`
 
-• Pointers store addresses, not values.
-• Always initialize pointers and check before dereferencing.
-• Free dynamically allocated memory and set pointers to `nullptr` after deleting.
-• Never return pointers to local variables.`,
+## Common Pointer Mistakes
+
+### Dereferencing Null Pointers
+
+\`\`\`cpp
+int* ptr = nullptr;
+*ptr = 42;  // CRASH! Cannot dereference null pointer
+\`\`\`
+
+**Always check before dereferencing**:
+
+\`\`\`cpp
+int* ptr = nullptr;
+if (ptr != nullptr) {
+    *ptr = 42;  // Safe
+}
+\`\`\`
+
+### Dangling Pointers
+
+A dangling pointer points to memory that has been freed or is no longer valid:
+
+\`\`\`cpp
+int* createDanglingPointer() {
+    int localVar = 42;
+    return &localVar;  // DANGER! localVar is destroyed
+}
+
+int main() {
+    int* ptr = createDanglingPointer();
+    // ptr is now dangling - undefined behavior
+}
+\`\`\`
+
+### Memory Leaks
+
+Forgetting to free dynamically allocated memory causes leaks:
+
+\`\`\`cpp
+void leak() {
+    int* ptr = new int(42);
+    // Forgot to delete!
+}  // Memory leaked
+\`\`\`
+
+**Always pair new with delete**:
+
+\`\`\`cpp
+void noLeak() {
+    int* ptr = new int(42);
+    // Use ptr...
+    delete ptr;  // Free memory
+    ptr = nullptr;  // Prevent dangling pointer
+}
+\`\`\`
+
+## Key Takeaways
+
+**Pointers store memory addresses**, not values directly. They provide a way to indirectly access and modify data.
+
+**Always initialize pointers** to nullptr or a valid address. Uninitialized pointers contain garbage values.
+
+**Check before dereferencing** to avoid crashes. Null pointer dereference is a common source of bugs.
+
+**Free allocated memory** when done. Every \`new\` must have a corresponding \`delete\`.
+
+**Avoid returning addresses** of local variables. They become invalid when the function ends.
+
+Next, we'll explore safer alternatives using references and modern C++ features.`,
         },
       },
       {
@@ -131,47 +228,50 @@ Key Takeaways
         type: "challenge",
         duration: 15,
         content: {
-          // Updated challenge description for clarity.
-          markdown: `Pointer Safety Challenge
+          markdown: `# Pointer Safety Challenge
 
-Your mission is to demonstrate safe pointer usage by creating, using and properly managing pointers without causing undefined behavior or memory leaks.
+## Your Mission
 
-Requirements:
-1. Declare and initialize pointers correctly.
-2. Safely dereference pointers with null checks.
-3. Allocate and deallocate memory properly.
-4. Avoid common pointer mistakes.
+Demonstrate safe pointer usage by creating, using, and properly managing pointers without causing undefined behavior or memory leaks.
 
-Hints:
-• Always initialize pointers to nullptr.
-• Check for null before dereferencing.
-• Use new/delete correctly.
-• Set pointers to nullptr after deleting.`,
+## Requirements
+
+1. Declare and initialize pointers correctly
+2. Safely dereference pointers with null checks
+3. Allocate and deallocate memory properly
+4. Avoid common pointer mistakes
+
+## Hints
+
+- Always initialize pointers to nullptr
+- Check for null before dereferencing
+- Use new/delete correctly
+- Set pointers to nullptr after deleting`,
           code: {
             language: "cpp",
             starter: `#include <iostream>
 
 int main() {
     // TODO: Declare a pointer and initialize it to nullptr
-
+    
     
     // TODO: Allocate memory for an integer
-
+    
     
     // TODO: Check if allocation succeeded
-
+    
     
     // TODO: Assign a value through the pointer
-
+    
     
     // TODO: Print the value
-
+    
     
     // TODO: Free the memory
-
+    
     
     // TODO: Set pointer to nullptr
-
+    
     
     return 0;
 }`,
@@ -230,26 +330,32 @@ int main() {
                 "Dereferences a pointer",
                 "Returns the address of a variable",
                 "Allocates memory",
-                "Deletes a pointer",
+                "Deletes a pointer"
               ],
               correctAnswer: "b",
-              explanation:
-                "The & operator (address-of) returns the memory address of a variable, allowing you to create pointers to that variable.",
+              explanation: "The & operator (address-of) returns the memory address of a variable, allowing you to create pointers to that variable."
             },
             {
-              question:
-                "What value should you initialize pointers to if you don't have a valid address yet?",
-              options: ["0", "nullptr", "void", "Don't initialize them"],
+              question: "What value should you initialize pointers to if you don't have a valid address yet?",
+              options: [
+                "0",
+                "nullptr",
+                "void",
+                "Don't initialize them"
+              ],
               correctAnswer: "b",
-              explanation:
-                "In modern C++, use nullptr to initialize pointers that don't point to a valid address yet. This makes it clear the pointer is intentionally null.",
+              explanation: "In modern C++, use nullptr to initialize pointers that don't point to a valid address yet. This makes it clear the pointer is intentionally null."
             },
             {
               question: "What happens if you dereference a null pointer?",
-              options: ["Returns 0", "Returns nullptr", "Undefined behavior (usually crash)", "Creates a new value"],
+              options: [
+                "Returns 0",
+                "Returns nullptr",
+                "Undefined behavior (usually crash)",
+                "Creates a new value"
+              ],
               correctAnswer: "c",
-              explanation:
-                "Dereferencing a null pointer causes undefined behavior, which typically results in a program crash or segmentation fault.",
+              explanation: "Dereferencing a null pointer causes undefined behavior, which typically results in a program crash or segmentation fault."
             },
             {
               question: "What is a dangling pointer?",
@@ -257,11 +363,10 @@ int main() {
                 "A pointer that is null",
                 "A pointer to deallocated or invalid memory",
                 "A pointer with no name",
-                "A pointer that points to itself",
+                "A pointer that points to itself"
               ],
               correctAnswer: "b",
-              explanation:
-                "A dangling pointer points to memory that has been freed or is no longer valid. Using it causes undefined behavior.",
+              explanation: "A dangling pointer points to memory that has been freed or is no longer valid. Using it causes undefined behavior."
             },
             {
               question: "What should you do after calling delete on a pointer?",
@@ -269,12 +374,11 @@ int main() {
                 "Nothing, you're done",
                 "Call delete again",
                 "Set the pointer to nullptr",
-                "Dereference it to confirm",
+                "Dereference it to confirm"
               ],
               correctAnswer: "c",
-              explanation:
-                "After deleting a pointer, set it to nullptr to prevent it from becoming a dangling pointer that could be accidentally used.",
-            },
+              explanation: "After deleting a pointer, set it to nullptr to prevent it from becoming a dangling pointer that could be accidentally used."
+            }
           ],
         },
       },
@@ -283,7 +387,7 @@ int main() {
   {
     id: "module-2",
     title: "References and Safe Alternatives",
-    description: "Learn safer alternatives to raw pointers and how to use references effectively.",
+    description: "Learn safer alternatives to raw pointers",
     lessons: [
       {
         id: "lesson-2-1",
@@ -291,60 +395,183 @@ int main() {
         type: "lesson",
         duration: 25,
         content: {
-          // Explain references, how they differ from pointers and when to use them.
-          markdown: `Understanding References
+          markdown: `# Understanding References
 
-A reference is an alias for an existing variable. Unlike pointers, references must be initialized when declared and cannot be changed to refer to something else. They can never be null, making them inherently safer.
+## What is a Reference?
 
-References vs. Pointers
+A reference is an alias for an existing variable. Unlike pointers, references must be initialized when declared and cannot be changed to refer to something else.
 
-• Initialization: references must be initialized when declared; pointers may be left uninitialized (though this is unsafe).
-• Nullability: references cannot be null; pointers can be null.
-• Reassignment: a reference cannot be reassigned to refer to a different object; a pointer can be reassigned.
-• Syntax: references use a cleaner syntax without dereferencing, while pointers require the * operator.
-
-Example:
-
-```cpp
+\`\`\`cpp
 int value = 42;
-int& ref = value;  // ref refers to value
-ref = 100;         // changes value to 100
+int& ref = value;  // ref is an alias for value
 
-int* ptr = &value; // ptr points to value
-*ptr = 200;        // changes value to 200
-ptr = nullptr;     // ptr can be reassigned
-```
+ref = 100;  // Changes value to 100
+std::cout << value << std::endl;  // Prints: 100
+\`\`\`
 
-When to Use References
+## References vs Pointers
 
-• **Function parameters**: pass large objects by const reference to avoid copying while preventing modification.
-• **Modifying arguments**: pass by non‑const reference to allow a function to modify the caller's variable.
-• **Range‑based loops**: use references in range‑based for loops to avoid copying elements.
+### References
 
-Const References
+- Must be initialized when declared
+- Cannot be null
+- Cannot be reassigned
+- Cleaner syntax (no dereferencing needed)
+- Cannot be stored in arrays or containers
 
-Const references provide read‑only access and can bind to temporaries:
+\`\`\`cpp
+int x = 10;
+int& ref = x;  // Must initialize
+ref = 20;      // Direct assignment
+\`\`\`
 
-```cpp
+### Pointers
+
+- Can be uninitialized (though unsafe)
+- Can be null
+- Can be reassigned
+- Require dereferencing
+- Can be stored in arrays and containers
+
+\`\`\`cpp
+int x = 10;
+int* ptr = &x;  // Can be nullptr
+*ptr = 20;      // Need dereferencing
+ptr = nullptr;  // Can reassign
+\`\`\`
+
+## When to Use References
+
+### Function Parameters
+
+References are perfect for passing large objects without copying:
+
+\`\`\`cpp
+void printVector(const std::vector<int>& vec) {
+    // vec is a reference - no copy made
+    for (int val : vec) {
+        std::cout << val << " ";
+    }
+}
+\`\`\`
+
+### Modifying Function Arguments
+
+References allow functions to modify caller's variables:
+
+\`\`\`cpp
+void increment(int& value) {
+    value++;  // Modifies the original
+}
+
+int main() {
+    int x = 5;
+    increment(x);
+    std::cout << x << std::endl;  // Prints: 6
+}
+\`\`\`
+
+### Range-Based For Loops
+
+References avoid copying when iterating:
+
+\`\`\`cpp
+std::vector<std::string> names = {"Alice", "Bob", "Charlie"};
+
+// Copy each string (slow)
+for (std::string name : names) {
+    std::cout << name << std::endl;
+}
+
+// Reference each string (fast)
+for (const std::string& name : names) {
+    std::cout << name << std::endl;
+}
+\`\`\`
+
+## Const References
+
+Const references provide read-only access and can bind to temporaries:
+
+\`\`\`cpp
 void print(const std::string& str) {
     std::cout << str << std::endl;
+    // str = "changed";  // ERROR: cannot modify const reference
 }
-print("Hello");      // bind temporary to const reference
-std::string msg = "World";
-print(msg);          // bind variable to const reference
-```
 
-Common Mistakes
+int main() {
+    print("Hello");  // Can pass temporary
+    
+    std::string message = "World";
+    print(message);  // Can pass variable
+}
+\`\`\`
 
-• **Dangling references**: never return a reference to a local variable — the reference becomes invalid when the function ends.
-• **Uninitialized references**: references must be initialized when declared; you cannot have an uninitialized reference.
+## Reference Member Variables
 
-Key Takeaways
+Classes can have reference members, but they must be initialized in the constructor:
 
-• References are aliases for existing variables and provide a safer alternative to pointers in many situations.
-• Use const references to efficiently pass large objects to functions without copying.
-• Never return references to local variables.
-• References cannot be null and cannot be reassigned after initialization.`,
+\`\`\`cpp
+class Wrapper {
+    int& ref;  // Reference member
+    
+public:
+    Wrapper(int& value) : ref(value) {
+        // Must initialize in initializer list
+    }
+    
+    void increment() {
+        ref++;  // Modifies original value
+    }
+};
+\`\`\`
+
+## Common Reference Mistakes
+
+### Dangling References
+
+Never return references to local variables:
+
+\`\`\`cpp
+// DANGEROUS
+int& createDanglingRef() {
+    int local = 42;
+    return local;  // local is destroyed!
+}
+
+// SAFE
+int createValue() {
+    int local = 42;
+    return local;  // Copy is returned
+}
+\`\`\`
+
+### Uninitialized References
+
+References must be initialized:
+
+\`\`\`cpp
+// ERROR: Cannot compile
+int& ref;  // Must be initialized
+
+// CORRECT
+int value = 42;
+int& ref = value;
+\`\`\`
+
+## Key Takeaways
+
+**References are aliases** for existing variables. They provide a safer alternative to pointers in many situations.
+
+**References cannot be null** and must be initialized, making them inherently safer than pointers.
+
+**Use const references** for function parameters to avoid copying while preventing modifications.
+
+**Never return references** to local variables, as they'll be destroyed when the function ends.
+
+**References cannot be reassigned** once initialized, providing stability and predictability in your code.
+
+Next, we'll explore how to work safely with arrays and prevent buffer overflows.`,
         },
       },
       {
@@ -353,32 +580,35 @@ Key Takeaways
         type: "challenge",
         duration: 20,
         content: {
-          // Clarify the challenge description and hints using plain text.
-          markdown: `References Challenge
+          markdown: `# References Challenge
 
-Your mission is to practice using references for efficient function parameters and safe variable aliasing.
+## Your Mission
 
-Requirements:
-1. Create functions that use references as parameters.
-2. Use const references for read‑only access.
-3. Modify variables through references.
-4. Demonstrate the efficiency of references versus copies.
+Practice using references for efficient function parameters and safe variable aliasing.
 
-Hints:
-• Use const references for parameters that shouldn't change.
-• Use non‑const references to modify caller's variables.
-• References must be initialized when declared.
-• References provide direct access without dereferencing.`,
+## Requirements
+
+1. Create functions that use references as parameters
+2. Use const references for read-only access
+3. Modify variables through references
+4. Demonstrate efficiency of references vs copies
+
+## Hints
+
+- Use const references for parameters that shouldn't change
+- Use non-const references to modify caller's variables
+- References must be initialized when declared
+- References provide direct access without dereferencing`,
           code: {
             language: "cpp",
             starter: `#include <iostream>
 #include <string>
 
-// TODO: Implement function that takes a const reference
+// TODO: Implement function that takes const reference
 // and returns the length of a string
 
 
-// TODO: Implement function that takes a non‑const reference
+// TODO: Implement function that takes non-const reference
 // and doubles the value
 
 
@@ -387,25 +617,25 @@ Hints:
 
 int main() {
     // TODO: Test string length function
-
+    
     
     // TODO: Test doubling function
-
+    
     
     // TODO: Test swap function
-
+    
     
     return 0;
 }`,
             solution: `#include <iostream>
 #include <string>
 
-// Function with const reference — doesn't modify the argument
+// Function with const reference - doesn't modify
 size_t getLength(const std::string& str) {
     return str.length();
 }
 
-// Function with non‑const reference — modifies the argument
+// Function with non-const reference - modifies
 void doubleValue(int& value) {
     value *= 2;
 }
@@ -425,23 +655,23 @@ int main() {
     
     // Test doubling
     int number = 21;
-    std::cout << "\nBefore double: " << number << std::endl;
+    std::cout << "\\nBefore double: " << number << std::endl;
     doubleValue(number);
     std::cout << "After double: " << number << std::endl;
     
     // Test swap
     int x = 10, y = 20;
-    std::cout << "\nBefore swap: x=" << x << ", y=" << y << std::endl;
+    std::cout << "\\nBefore swap: x=" << x << ", y=" << y << std::endl;
     swap(x, y);
     std::cout << "After swap: x=" << x << ", y=" << y << std::endl;
     
     return 0;
 }`,
             tests: `// Test: getLength returns correct length
-// Test: original string unchanged after calling getLength
-// Test: doubleValue modifies the original value
+// Test: Original string unchanged
+// Test: doubleValue modifies original
 // Test: swap exchanges values correctly
-// Test: No unnecessary copies of large objects`,
+// Test: No copying of large objects`,
           },
         },
       },
@@ -453,30 +683,26 @@ int main() {
         content: {
           quiz: [
             {
-              question:
-                "What is the main difference between a reference and a pointer?",
+              question: "What is the main difference between a reference and a pointer?",
               options: [
                 "References are faster",
                 "References must be initialized and cannot be null",
                 "Pointers cannot be reassigned",
-                "References require dereferencing",
+                "References require dereferencing"
               ],
               correctAnswer: "b",
-              explanation:
-                "References must be initialized when declared and cannot be null, making them inherently safer than pointers.",
+              explanation: "References must be initialized when declared and cannot be null, making them inherently safer than pointers."
             },
             {
-              question:
-                "When passing large objects to functions, what should you use?",
+              question: "When passing large objects to functions, what should you use?",
               options: [
                 "Pass by value",
                 "Pass by const reference",
                 "Pass by pointer",
-                "Use global variables",
+                "Use global variables"
               ],
               correctAnswer: "b",
-              explanation:
-                "Const references avoid copying large objects while preventing modifications, providing both efficiency and safety.",
+              explanation: "Const references avoid copying large objects while preventing modifications, providing both efficiency and safety."
             },
             {
               question: "Can you return a reference to a local variable?",
@@ -484,12 +710,11 @@ int main() {
                 "Yes, always",
                 "Yes, if it's const",
                 "No, it causes undefined behavior",
-                "Yes, but only for primitives",
+                "Yes, but only for primitives"
               ],
               correctAnswer: "c",
-              explanation:
-                "Returning a reference to a local variable causes undefined behavior because the local variable is destroyed when the function ends.",
-            },
+              explanation: "Returning a reference to a local variable causes undefined behavior because the local variable is destroyed when the function ends."
+            }
           ],
         },
       },
@@ -498,7 +723,7 @@ int main() {
   {
     id: "module-3",
     title: "Array and String Safety",
-    description: "Prevent buffer overflows and handle arrays and strings safely.",
+    description: "Prevent buffer overflows and handle arrays safely",
     lessons: [
       {
         id: "lesson-3-1",
@@ -506,68 +731,194 @@ int main() {
         type: "lesson",
         duration: 30,
         content: {
-          // Provide practical guidance on using arrays safely and avoiding common errors.
-          markdown: `Safe Array Operations
+          markdown: `# Safe Array Operations
 
-Arrays are contiguous blocks of memory that store multiple elements of the same type. They are powerful but can be a common source of security vulnerabilities if used incorrectly.
+## Understanding Arrays
 
-Buffer Overflows
+Arrays are contiguous blocks of memory that store multiple elements of the same type. While powerful, they're also a common source of security vulnerabilities.
 
-A buffer overflow occurs when you write beyond the bounds of an array, overwriting adjacent memory and causing undefined behavior. For example:
+\`\`\`cpp
+int numbers[5] = {1, 2, 3, 4, 5};
+// numbers[0] through numbers[4] are valid
+// numbers[5] is OUT OF BOUNDS
+\`\`\`
 
-```cpp
+## Buffer Overflow Vulnerabilities
+
+A buffer overflow occurs when you write beyond the bounds of an array, potentially overwriting adjacent memory:
+
+\`\`\`cpp
 int arr[5];
-arr[10] = 42;  // Out‑of‑bounds write!
-```
+arr[10] = 42;  // BUFFER OVERFLOW - Undefined behavior
+\`\`\`
 
-Buffer overflows can crash programs, corrupt data, allow attackers to execute arbitrary code or bypass security checks.
+### Real-World Impact
 
-Bounds Checking
+Buffer overflows are responsible for countless security breaches. They can:
 
-Always verify that an index is within the valid range before accessing an array element:
+- Crash programs
+- Corrupt data
+- Allow attackers to execute arbitrary code
+- Bypass security checks
 
-```cpp
+## Bounds Checking
+
+Always verify array indices before access:
+
+\`\`\`cpp
 int arr[5] = {1, 2, 3, 4, 5};
 int index = getUserInput();
+
+// UNSAFE
+int value = arr[index];  // Could be out of bounds
+
+// SAFE
 if (index >= 0 && index < 5) {
     int value = arr[index];
 } else {
     std::cerr << "Index out of bounds!" << std::endl;
 }
-```
+\`\`\`
 
-Modern C++ Containers
+## Modern C++ Containers
 
-Instead of raw arrays, prefer safer containers:
-• **std::array** – a fixed‑size container that knows its size and provides bounds‑checked access via `at()`.
-• **std::vector** – a dynamic container that grows as needed and also provides `at()` for safe access.
+Instead of raw arrays, use std::array or std::vector for automatic bounds checking:
 
-Using these containers eliminates many manual bounds checks and prevents array decay to pointers.
+### std::array - Fixed Size
 
-Iterating Safely
+\`\`\`cpp
+#include <array>
 
-Use range‑based for loops to iterate without managing indices:
+std::array<int, 5> numbers = {1, 2, 3, 4, 5};
 
-```cpp
+// Safe access with bounds checking
+try {
+    int value = numbers.at(10);  // Throws exception
+} catch (const std::out_of_range& e) {
+    std::cerr << "Out of bounds!" << std::endl;
+}
+
+// Also provides size information
+std::cout << "Size: " << numbers.size() << std::endl;
+\`\`\`
+
+### std::vector - Dynamic Size
+
+\`\`\`cpp
+#include <vector>
+
 std::vector<int> numbers = {1, 2, 3, 4, 5};
+
+// Safe access
+try {
+    int value = numbers.at(10);  // Throws exception
+} catch (const std::out_of_range& e) {
+    std::cerr << "Out of bounds!" << std::endl;
+}
+
+// Dynamic sizing
+numbers.push_back(6);  // Grows automatically
+numbers.resize(10);    // Change size
+\`\`\`
+
+## Iterating Safely
+
+### Range-Based For Loops
+
+The safest way to iterate over containers:
+
+\`\`\`cpp
+std::vector<int> numbers = {1, 2, 3, 4, 5};
+
 for (const int& num : numbers) {
     std::cout << num << std::endl;
 }
-```
+// No index management, no bounds errors
+\`\`\`
 
-If you need indices, use `size()` in the loop condition.
+### Index-Based Loops
 
-Common Pitfalls
+If you need indices, use size() for bounds:
 
-• **Off‑by‑one errors**: using `<=` instead of `<` in loop conditions can result in out‑of‑bounds access.
-• **Array decay to pointers**: arrays passed to functions decay to pointers and lose size information. Always pass the size along or use a container that tracks its size.
+\`\`\`cpp
+std::vector<int> numbers = {1, 2, 3, 4, 5};
 
-Key Takeaways
+for (size_t i = 0; i < numbers.size(); ++i) {
+    std::cout << numbers[i] << std::endl;
+}
+\`\`\`
 
-• Always perform bounds checks when accessing arrays.
-• Prefer `std::array` and `std::vector` for safer and more flexible array handling.
-• Use safe access methods like `at()` and range‑based loops to avoid common mistakes.
-• Pass size information explicitly when working with raw arrays.`,
+### Iterator-Based Loops
+
+Most flexible and safe:
+
+\`\`\`cpp
+std::vector<int> numbers = {1, 2, 3, 4, 5};
+
+for (auto it = numbers.begin(); it != numbers.end(); ++it) {
+    std::cout << *it << std::endl;
+}
+\`\`\`
+
+## Common Array Mistakes
+
+### Off-by-One Errors
+
+\`\`\`cpp
+int arr[5];
+
+// WRONG - Accesses arr[5] which is out of bounds
+for (int i = 0; i <= 5; ++i) {
+    arr[i] = 0;
+}
+
+// CORRECT
+for (int i = 0; i < 5; ++i) {
+    arr[i] = 0;
+}
+\`\`\`
+
+### Array Decay to Pointers
+
+When passed to functions, arrays decay to pointers and lose size information:
+
+\`\`\`cpp
+void printArray(int arr[], int size) {
+    // sizeof(arr) gives pointer size, not array size!
+    for (int i = 0; i < size; ++i) {
+        std::cout << arr[i] << std::endl;
+    }
+}
+
+int main() {
+    int numbers[5] = {1, 2, 3, 4, 5};
+    printArray(numbers, 5);  // Must pass size separately
+}
+\`\`\`
+
+**Better approach** - Use std::array or std::span:
+
+\`\`\`cpp
+void printArray(const std::array<int, 5>& arr) {
+    for (const int& num : arr) {
+        std::cout << num << std::endl;
+    }
+}
+\`\`\`
+
+## Key Takeaways
+
+**Always check array bounds** before accessing elements. Out-of-bounds access causes undefined behavior.
+
+**Prefer std::array and std::vector** over raw arrays for automatic size tracking and bounds checking.
+
+**Use range-based for loops** when possible to eliminate index management and bounds errors.
+
+**The at() method provides safe access** with automatic bounds checking and exception throwing.
+
+**Pass size information** when working with raw arrays, or use containers that track their own size.
+
+Next, we'll explore string handling and how to prevent string-related vulnerabilities.`,
         },
       },
       {
@@ -576,69 +927,188 @@ Key Takeaways
         type: "lesson",
         duration: 25,
         content: {
-          // Discuss safe string handling and how to avoid C‑string pitfalls.
-          markdown: `String Safety
+          markdown: `# String Safety
 
-Working with strings in C++ can be challenging. C‑style strings are arrays of characters terminated by a null byte. They are dangerous because they require manual memory management and are prone to buffer overflows.
+## C-Style Strings vs std::string
 
-C‑Style Strings vs. std::string
+### C-Style Strings (Dangerous)
 
-• **C‑style strings**: fixed‑size character arrays (e.g. \`char name[10] = "Alice";\`). They waste space or overflow if the content is too large.
-• **std::string**: a modern C++ class that manages its own memory, grows dynamically and knows its length. Prefer `std::string` for safety and convenience:
+C-style strings are null-terminated character arrays. They're prone to buffer overflows and require manual memory management:
 
-```cpp
-std::string name = "Alice";
-name += " Smith";           // Safe concatenation
-std::cout << name.length(); // Retrieve length safely
-```
+\`\`\`cpp
+char name[10] = "Alice";  // Wastes space or causes overflow
+char* message = "Hello";  // No modification allowed
+\`\`\`
 
-Common Vulnerabilities
+### std::string (Safe)
 
-• **Buffer overflow**: functions like `strcpy()` do not check buffer sizes and can overflow destination arrays.
-• **Missing null terminator**: forgetting to include `\0` at the end of a C‑string causes undefined behavior.
+Modern C++ provides std::string which manages memory automatically:
 
-Use `std::string` to avoid these issues.
+\`\`\`cpp
+std::string name = "Alice";  // Grows as needed
+name += " Smith";  // Safe concatenation
+std::cout << name.length() << std::endl;  // Know the length
+\`\`\`
 
-Safe String Operations
+## Common String Vulnerabilities
 
-• **Concatenation**: use `+=` or `append()` on `std::string`. Avoid `strcat()` on character arrays.
-• **Comparison**: use `==` with `std::string` instead of `strcmp()`.
-• **Substring**: use `substr()` and catch `std::out_of_range` exceptions for invalid indices.
-• **Finding**: use `find()`; it returns `std::string::npos` if the substring is not found.
+### Buffer Overflow with strcpy
 
-Input Validation
+\`\`\`cpp
+char buffer[5];
+strcpy(buffer, "This is too long");  // BUFFER OVERFLOW!
+\`\`\`
 
-Always validate and sanitize user input:
+**Safe alternative**:
 
-```cpp
-std::string input;
-std::getline(std::cin, input);
-if (input.length() > MAX_LENGTH) {
-    input = input.substr(0, MAX_LENGTH);
+\`\`\`cpp
+std::string buffer = "This is too long";  // Automatically sized
+\`\`\`
+
+### Null Terminator Problems
+
+C-strings must end with '\\0', forgetting this causes issues:
+
+\`\`\`cpp
+char str[5] = {'H', 'e', 'l', 'l', 'o'};  // Missing \\0
+std::cout << str << std::endl;  // Undefined behavior
+\`\`\`
+
+**Safe alternative**:
+
+\`\`\`cpp
+std::string str = "Hello";  // Automatically terminated
+\`\`\`
+
+## Safe String Operations
+
+### Concatenation
+
+\`\`\`cpp
+// UNSAFE - C-style
+char result[100];
+strcpy(result, "Hello ");
+strcat(result, "World");  // What if it doesn't fit?
+
+// SAFE - std::string
+std::string result = "Hello ";
+result += "World";  // Grows automatically
+\`\`\`
+
+### Comparison
+
+\`\`\`cpp
+// UNSAFE - C-style
+if (strcmp(str1, str2) == 0) {
+    // Equal
 }
-// Remove dangerous characters
-input.erase(
-    std::remove_if(input.begin(), input.end(),
-        [](char c) { return c == ';' || c == '\0'; }),
-    input.end()
-);
-```
 
-Format String Safety
+// SAFE - std::string
+if (str1 == str2) {
+    // Equal
+}
+\`\`\`
 
-Never use user‑supplied input as a format string. Instead, use a fixed format:
+### Substring
 
-```cpp
-printf("%s", userInput.c_str());    // Safe
-std::cout << userInput << std::endl; // Better
-```
+\`\`\`cpp
+std::string text = "Hello World";
 
-Key Takeaways
+// Extract substring safely
+std::string hello = text.substr(0, 5);  // "Hello"
 
-• Use `std::string` instead of C‑strings for automatic memory management.
-• Avoid unsafe C library functions that don't check buffer sizes.
-• Always validate and sanitize input to prevent buffer overflows and injection attacks.
-• Never use user input as a format string.`,
+// Check bounds automatically
+try {
+    std::string invalid = text.substr(100, 5);
+} catch (const std::out_of_range& e) {
+    std::cerr << "Substring out of range!" << std::endl;
+}
+\`\`\`
+
+### Finding Substrings
+
+\`\`\`cpp
+std::string text = "Hello World";
+
+// Find returns position or npos
+size_t pos = text.find("World");
+if (pos != std::string::npos) {
+    std::cout << "Found at position: " << pos << std::endl;
+}
+\`\`\`
+
+## Input Validation
+
+Always validate and sanitize string input:
+
+\`\`\`cpp
+std::string getUserInput() {
+    std::string input;
+    std::getline(std::cin, input);
+    
+    // Validate length
+    if (input.length() > MAX_LENGTH) {
+        input = input.substr(0, MAX_LENGTH);
+    }
+    
+    // Remove dangerous characters
+    input.erase(
+        std::remove_if(input.begin(), input.end(), 
+            [](char c) { return c == ';' || c == '\\0'; }),
+        input.end()
+    );
+    
+    return input;
+}
+\`\`\`
+
+## String View (C++17)
+
+For read-only string access without copying:
+
+\`\`\`cpp
+#include <string_view>
+
+void printString(std::string_view sv) {
+    std::cout << sv << std::endl;
+    // No copy made, very efficient
+}
+
+int main() {
+    std::string str = "Hello World";
+    printString(str);  // No copy
+    printString("Literal");  // No copy
+}
+\`\`\`
+
+## Format String Safety
+
+Never use user input directly as format strings:
+
+\`\`\`cpp
+// DANGEROUS
+printf(userInput);  // User could inject %x, %n, etc.
+
+// SAFE
+printf("%s", userInput.c_str());
+
+// BETTER
+std::cout << userInput << std::endl;
+\`\`\`
+
+## Key Takeaways
+
+**Use std::string instead of C-strings** for automatic memory management and safety features.
+
+**Avoid strcpy, strcat, and similar functions** that don't check buffer bounds.
+
+**Validate and sanitize all user input** to prevent injection attacks and buffer overflows.
+
+**Use std::string_view for read-only access** to avoid unnecessary copies while maintaining safety.
+
+**Never use user input as format strings** as this can lead to serious security vulnerabilities.
+
+Next, we'll explore smart pointers and modern resource management techniques.`,
         },
       },
       {
@@ -647,48 +1117,51 @@ Key Takeaways
         type: "challenge",
         duration: 20,
         content: {
-          // Clarify the challenge objectives and hints for safe string handling.
-          markdown: `String Safety Challenge
+          markdown: `# String Safety Challenge
 
-Your mission is to implement safe string operations using modern C++ features, avoiding buffer overflows and other string‑related vulnerabilities.
+## Your Mission
 
-Requirements:
-1. Use `std::string` for all string operations.
-2. Validate input lengths.
-3. Perform safe concatenation with a length limit.
-4. Implement safe substring extraction.
-5. Handle edge cases gracefully.
+Implement safe string operations using modern C++ features, avoiding buffer overflows and other string-related vulnerabilities.
 
-Hints:
-• `std::string` grows automatically as needed.
-• Use `.at()` for bounds‑checked access.
-• `.substr()` can throw `std::out_of_range`; catch the exception and handle it.
-• `.find()` returns `std::string::npos` if the substring is not found.
-• Always validate user input.`,
+## Requirements
+
+1. Use std::string for all string operations
+2. Validate input lengths
+3. Perform safe concatenation
+4. Implement safe substring extraction
+5. Handle edge cases gracefully
+
+## Hints
+
+- std::string grows automatically
+- Use .at() for bounds-checked access
+- .substr() can throw out_of_range
+- .find() returns npos if not found
+- Always validate user input`,
           code: {
             language: "cpp",
             starter: `#include <iostream>
 #include <string>
 
-// TODO: Implement a function that safely concatenates two strings
+// TODO: Implement function that safely concatenates two strings
 // with a maximum length limit
 
 
-// TODO: Implement a function that extracts a substring safely
+// TODO: Implement function that extracts a substring safely
 
 
-// TODO: Implement a function that validates and cleans user input
+// TODO: Implement function that validates and cleans user input
 
 
 int main() {
     // TODO: Test safe concatenation
-
+    
     
     // TODO: Test safe substring extraction
-
+    
     
     // TODO: Test input validation
-
+    
     
     return 0;
 }`,
@@ -697,20 +1170,22 @@ int main() {
 #include <algorithm>
 
 // Safe concatenation with length limit
-std::string safeConcatenate(const std::string& str1,
-                            const std::string& str2,
+std::string safeConcatenate(const std::string& str1, 
+                            const std::string& str2, 
                             size_t maxLength) {
     std::string result = str1 + str2;
+    
     if (result.length() > maxLength) {
         result = result.substr(0, maxLength);
     }
+    
     return result;
 }
 
 // Safe substring extraction
-std::string safeSubstring(const std::string& str,
-                          size_t start,
-                          size_t length) {
+std::string safeSubstring(const std::string& str, 
+                         size_t start, 
+                         size_t length) {
     try {
         return str.substr(start, length);
     } catch (const std::out_of_range& e) {
@@ -722,16 +1197,22 @@ std::string safeSubstring(const std::string& str,
 // Input validation and cleaning
 std::string validateInput(const std::string& input) {
     const size_t MAX_LENGTH = 100;
-    std::string result = input;
+    
     // Trim to max length
+    std::string result = input;
     if (result.length() > MAX_LENGTH) {
         result = result.substr(0, MAX_LENGTH);
     }
+    
     // Remove dangerous characters
     result.erase(
         std::remove_if(result.begin(), result.end(),
-            [](char c) { return c == ';' || c == '\0' || c == '\n'; }),
-        result.end());
+            [](char c) { 
+                return c == ';' || c == '\\0' || c == '\\n'; 
+            }),
+        result.end()
+    );
+    
     return result;
 }
 
@@ -740,25 +1221,26 @@ int main() {
     std::string result = safeConcatenate("Hello ", "World", 10);
     std::cout << "Result: " << result << std::endl;
     
-    std::cout << "\n=== Safe Substring ===" << std::endl;
+    std::cout << "\\n=== Safe Substring ===" << std::endl;
     std::string text = "Hello World";
     std::string sub = safeSubstring(text, 0, 5);
     std::cout << "Substring: " << sub << std::endl;
+    
     // Try invalid substring
     std::string invalid = safeSubstring(text, 100, 5);
     
-    std::cout << "\n=== Input Validation ===" << std::endl;
+    std::cout << "\\n=== Input Validation ===" << std::endl;
     std::string dangerous = "User;Input;With;Bad;Chars";
     std::string clean = validateInput(dangerous);
     std::cout << "Cleaned: " << clean << std::endl;
     
     return 0;
 }`,
-            tests: `// Test: concatenation respects length limit
-// Test: substring handles out‑of‑range gracefully
-// Test: input validation removes dangerous characters
-// Test: no buffer overflows occur
-// Test: all string operations are safe`,
+            tests: `// Test: Concatenation respects length limit
+// Test: Substring handles out-of-range gracefully
+// Test: Input validation removes dangerous characters
+// Test: No buffer overflows occur
+// Test: All string operations are safe`,
           },
         },
       },
@@ -770,16 +1252,15 @@ int main() {
         content: {
           quiz: [
             {
-              question: "What is the main advantage of std::string over C‑style strings?",
+              question: "What is the main advantage of std::string over C-style strings?",
               options: [
                 "It's faster",
                 "It automatically manages memory and size",
                 "It uses less memory",
-                "It's easier to type",
+                "It's easier to type"
               ],
               correctAnswer: "b",
-              explanation:
-                "std::string automatically manages memory allocation and tracks its size, preventing buffer overflows and simplifying string handling.",
+              explanation: "std::string automatically manages memory allocation and tracks its size, preventing buffer overflows and simplifying string handling."
             },
             {
               question: "What does std::string::npos represent?",
@@ -787,25 +1268,22 @@ int main() {
                 "The null terminator",
                 "The end position",
                 "A value returned when a substring is not found",
-                "The maximum string length",
+                "The maximum string length"
               ],
               correctAnswer: "c",
-              explanation:
-                "std::string::npos is a special value returned by find() and similar functions when the searched substring is not found.",
+              explanation: "std::string::npos is a special value returned by find() and similar functions when the searched substring is not found."
             },
             {
-              question:
-                "Why should you never use user input directly as a format string?",
+              question: "Why should you never use user input directly as a format string?",
               options: [
                 "It's slower",
                 "It uses more memory",
                 "It can lead to format string vulnerabilities",
-                "It doesn't work in C++",
+                "It doesn't work in C++"
               ],
               correctAnswer: "c",
-              explanation:
-                "Using user input as a format string allows attackers to inject format specifiers that can read or write arbitrary memory locations.",
-            },
+              explanation: "Using user input as a format string allows attackers to inject format specifiers that can read or write arbitrary memory locations."
+            }
           ],
         },
       },
