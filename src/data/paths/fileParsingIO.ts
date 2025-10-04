@@ -1,11 +1,5 @@
 import { Module } from "../pathModules";
 
-// This module defines a learning path for safe file parsing and I/O in C++.
-// It retains the same UI/UX structure used across the application while greatly
-// expanding the instructional content. Each lesson now provides a deeper
-// explanation of concepts, clearer organization, and concrete examples to
-// reinforce best practices for handling files and untrusted data in C++.
-
 export const fileParsingIOModules: Module[] = [
   {
     id: "module-1",
@@ -18,212 +12,265 @@ export const fileParsingIOModules: Module[] = [
         type: "lesson",
         duration: 25,
         content: {
-          markdown: `# Safe File Operations
-
-## Why Safe File I/O Matters
-
-File input/output appears simple, but it is a major source of bugs and security vulnerabilities. Improper handling can lead to buffer overflows, data corruption, resource leaks, and even code execution. Modern C++ provides safer abstractions that make it easy to open, read, write, and close files without resorting to fragile C APIs.
+          markdown: `# File I/O Fundamentals
 
 ## Opening Files Safely
 
-Always use RAII-based file streams (\`std::ifstream\`, \`std::ofstream\`, \`std::fstream\`) instead of C functions like \`fopen\`/\`fclose\`. These classes open the file in their constructor and automatically close it in their destructor, even if exceptions are thrown. Always check whether the file opened successfully before reading or writing.
+File I/O is a common source of security vulnerabilities. Using modern C++ file streams with proper error checking prevents many issues.
 
-// ...
+### Using fstream (Recommended)
+
+The fstream library provides safe, RAII-based file operations:
+
+\`\`\`cpp
 #include <fstream>
 #include <iostream>
-#include <string>
 
-void safeRead(const std::string& filename) {
-    std::ifstream in(filename, std::ios::in);
-    if (!in.is_open()) {
-        std::cerr << "Error: Cannot open " << filename << std::endl;
+void safeReadFile(const std::string& filename) {
+    std::ifstream file(filename);
+    
+    // Always check if file opened successfully
+    if (!file.is_open()) {
+        std::cerr << "Failed to open: " << filename << std::endl;
         return;
     }
-    // RAII ensures in.close() is called automatically
+    
+    std::string line;
+    while (std::getline(file, line)) {
+        std::cout << line << std::endl;
+    }
+    
+    // File automatically closed when 'file' goes out of scope
 }
-```
+\`\`\`
 
-**File open modes** control how the file is accessed. You can combine them using the bitwise OR operator:
+### File Open Modes
 
-// ...
-std::ios::in      // open for reading
-std::ios::out     // open for writing (truncate by default)
-std::ios::app     // append to the end of the file
-std::ios::binary  // open in binary mode
-std::ios::trunc   // truncate existing file on open
+Different modes control how files are accessed:
 
-// Example: open a file for both reading and writing without truncating
+\`\`\`cpp
+std::ios::in      // Read mode
+std::ios::out     // Write mode
+std::ios::app     // Append mode
+std::ios::binary  // Binary mode
+std::ios::trunc   // Truncate existing file
+
+// Combine modes with bitwise OR
 std::fstream file("data.txt", std::ios::in | std::ios::out);
-```
+\`\`\`
 
-## Reading Files
+## Reading Files Safely
 
 ### Line-by-Line Reading
 
-The safest way to process text files is to read one line at a time into a \`std::string\`. The string automatically grows as needed, so there is no risk of overflowing a fixed-size buffer.
+The safest way to read text files:
 
-// ...
-std::ifstream in("data.txt");
+\`\`\`cpp
+std::ifstream file("data.txt");
 std::string line;
-while (std::getline(in, line)) {
-    // process line
+
+while (std::getline(file, line)) {
+    // Process line safely
+    // No buffer overflow possible!
 }
-```
+\`\`\`
 
-**Advantages:**
-
-- \`std::string\` manages its own memory and grows automatically.
-- No predetermined buffer size, so there is no overflow.
-- The loop terminates cleanly at end of file.
+**Benefits:**
+- std::string grows automatically
+- No buffer size limits
+- No buffer overflow risk
+- Simple and clear code
 
 ### Reading Entire File
 
-Sometimes it is convenient to load the entire contents of a file into a single string. You can use input iterators to do this concisely:
+Load entire file contents into a string:
 
-// ...
-std::ifstream in("data.txt");
-std::string content((std::istreambuf_iterator<char>(in)),
-                    std::istreambuf_iterator<char>());
-```
+\`\`\`cpp
+std::ifstream file("data.txt");
+std::string content((std::istreambuf_iterator<char>(file)),
+                     std::istreambuf_iterator<char>());
+\`\`\`
 
 ### Reading with Error Checking
 
-Always check the state of the stream after reading. The \`eof()\` flag tells you if you have reached end-of-file, while \`fail()\` indicates an input error (such as a format mismatch).
+Always check for errors during file operations:
 
-// ...
-std::ifstream in("values.txt");
-if (!in) {
-    std::cerr << "Cannot open values.txt\n";
+\`\`\`cpp
+std::ifstream file("data.txt");
+
+if (!file) {
+    std::cerr << "Cannot open file" << std::endl;
     return;
 }
 
 int value;
-while (in >> value) {
-    // use value
+while (file >> value) {
+    // Process value
 }
 
-if (in.eof()) {
-    std::cout << "End of file reached\n";
-} else if (in.fail()) {
-    std::cerr << "Format error while reading values\n";
+if (file.eof()) {
+    std::cout << "End of file reached" << std::endl;
+} else if (file.fail()) {
+    std::cerr << "Format error" << std::endl;
 }
-```
+\`\`\`
 
-## Writing Files
+## Writing Files Safely
 
 ### Basic Writing
 
-Use \`std::ofstream\` to write text to a file. Always check that the file opened successfully before writing.
+Write data safely with automatic buffering:
 
-// ...
-std::ofstream out("output.txt");
-if (!out) {
-    std::cerr << "Error: cannot create output.txt\n";
+\`\`\`cpp
+std::ofstream file("output.txt");
+
+if (!file) {
+    std::cerr << "Cannot create file" << std::endl;
     return;
 }
-out << "Hello, world!" << std::endl;
-out << 42 << " " << 3.14 << std::endl;
-```
+
+file << "Hello World" << std::endl;
+file << 42 << " " << 3.14 << std::endl;
+\`\`\`
 
 ### Appending to Files
 
-To add data to an existing file without truncating it, open the file in append mode:
+Add data to existing files:
 
-// ...
-std::ofstream log("log.txt", std::ios::app);
-log << "New entry\n";
-```
+\`\`\`cpp
+std::ofstream file("log.txt", std::ios::app);
+file << "New log entry" << std::endl;
+\`\`\`
 
 ### Formatted Output
 
-The \`<iomanip>\` header provides manipulators like \`std::fixed\`, \`std::scientific\`, and \`std::setprecision\` to control the formatting of floating-point numbers.
+Control number formatting:
 
-// ...
+\`\`\`cpp
 #include <iomanip>
 
-std::ofstream out("data.txt");
-out << std::fixed << std::setprecision(2);
-out << 3.14159 << std::endl; // outputs 3.14
-```
+std::ofstream file("data.txt");
+file << std::fixed << std::setprecision(2);
+file << 3.14159 << std::endl;  // Writes: 3.14
+\`\`\`
 
 ## Binary File Operations
 
-When dealing with binary data, you must open files in binary mode to prevent unwanted newline translation. Use \`write()\` to write raw bytes and \`read()\` to read them back.
+### Writing Binary Data
 
-// ...
-// Writing binary data
-std::ofstream out("data.bin", std::ios::binary);
+Write raw binary data:
+
+\`\`\`cpp
+std::ofstream file("data.bin", std::ios::binary);
+
 int values[] = {1, 2, 3, 4, 5};
-out.write(reinterpret_cast<const char*>(values), sizeof(values));
+file.write(reinterpret_cast<char*>(values), sizeof(values));
+\`\`\`
 
-// Reading binary data
-std::ifstream in("data.bin", std::ios::binary);
-int buffer[5];
-in.read(reinterpret_cast<char*>(buffer), sizeof(buffer));
-```
+### Reading Binary Data
 
-## Common Pitfalls and How to Avoid Them
+Read raw binary data:
 
-### Failing to Check if a File Opened
+\`\`\`cpp
+std::ifstream file("data.bin", std::ios::binary);
 
-Never assume a file opened correctly. Use \`is_open()\` or the stream’s boolean conversion before attempting any operations.
+int values[5];
+file.read(reinterpret_cast<char*>(values), sizeof(values));
+\`\`\`
 
-// ...
-std::ifstream in("missing.txt");
-if (!in) {
-    std::cerr << "Unable to open file\n";
+## Common Pitfalls
+
+### Not Checking if File Opened
+
+\`\`\`cpp
+// WRONG - No error checking
+std::ifstream file("data.txt");
+std::string line;
+std::getline(file, line);  // Might fail silently!
+
+// RIGHT - Check status
+std::ifstream file("data.txt");
+if (!file.is_open()) {
+    std::cerr << "Error opening file" << std::endl;
     return;
 }
-```
+\`\`\`
 
-### Forgetting to Close Files
+### Forgetting to Close
 
-C-style file handles returned by \`fopen()\` must be closed manually, and forgetting to call \`fclose()\` leads to resource leaks. Prefer RAII-based streams that close themselves automatically.
+C-style file handles require manual closing:
 
-### Buffer Overflows with C APIs
+\`\`\`cpp
+// WRONG - C-style, easy to forget
+FILE* f = fopen("data.txt", "r");
+// ... use file ...
+// Forgot to fclose(f)!
 
-Functions like \`fgets()\` and \`scanf()\` require you to provide a buffer and specify its size. Using an incorrect size can lead to buffer overflows. Instead, use \`std::string\` and \`std::getline()\`, which manage memory for you.
+// RIGHT - Use RAII
+std::ifstream file("data.txt");
+// Automatically closed
+\`\`\`
 
-### Handling Partial Reads and Writes
+### Buffer Overflow with C Functions
 
-On some systems, especially when working with pipes or sockets, a call to \`read()\` or \`write()\` may transfer fewer bytes than requested. Loop until the full amount is transferred. The standard library stream functions hide these details for file I/O.
+C-style file functions are dangerous:
+
+\`\`\`cpp
+// DANGEROUS - Buffer overflow risk
+char buffer[10];
+FILE* f = fopen("data.txt", "r");
+fgets(buffer, 100, f);  // Buffer overflow!
+
+// SAFE - std::string grows automatically
+std::ifstream file("data.txt");
+std::string line;
+std::getline(file, line);  // No overflow possible
+\`\`\`
 
 ## Exception Safety
 
-File operations should be exception safe. Use RAII to ensure that resources are cleaned up when exceptions occur, and wrap operations in \`try\`/\`catch\` blocks where recovery is possible.
+File operations should be exception-safe:
 
-// ...
+\`\`\`cpp
 void processFile(const std::string& filename) {
-    std::ifstream in(filename);
-    if (!in) {
-        throw std::runtime_error("Cannot open " + filename);
+    std::ifstream file(filename);
+    
+    if (!file) {
+        throw std::runtime_error("Cannot open file");
     }
-
+    
     try {
+        // Process file
         std::string line;
-        while (std::getline(in, line)) {
-            handleLine(line);
+        while (std::getline(file, line)) {
+            processLine(line);
         }
-    } catch (const std::exception& ex) {
-        // the ifstream 'in' is still closed automatically
-        std::cerr << "Error processing file: " << ex.what() << std::endl;
-        throw; // rethrow to caller if needed
+    } catch (const std::exception& e) {
+        // File automatically closed even if exception thrown!
+        std::cerr << "Error: " << e.what() << std::endl;
+        throw;
     }
+    // File automatically closed here too
 }
-```
+\`\`\`
 
 ## Best Practices
 
-- **Always check** that the file was opened successfully.
-- **Prefer fstream classes** over C APIs for automatic resource management.
-- **Read using std::getline()** and \`std::string\` to avoid fixed-size buffers.
-- **Use binary mode** when reading or writing binary data.
-- **Handle errors** immediately after reading or writing using \`eof()\` and \`fail()\`.
-- **Use RAII** to ensure resources are released even in the presence of exceptions.
-- **Format output intentionally** with \`<iomanip>\` for consistency.
+**Always check if file opened successfully** before attempting operations.
 
-This lesson provided a foundation for safe, secure file I/O. Next, you will learn how to handle untrusted data and parse inputs defensively.
-`,
+**Use fstream instead of C-style FILE*** for automatic resource management and type safety.
+
+**Use RAII** to ensure files are closed even when exceptions occur.
+
+**Check errors after I/O operations** using fail(), eof(), and other state functions.
+
+**Use std::string** to avoid buffer overflows when reading text data.
+
+**Handle exceptions appropriately** to ensure cleanup and proper error reporting.
+
+**Use binary mode** when working with binary data to avoid newline translation.
+
+Next, we'll explore parsing untrusted input safely.`,
         },
       },
       {
@@ -248,21 +295,20 @@ Implement safe file reading and writing with proper error handling and resource 
 
 ## Learning Objectives
 
-- Practice using \`std::ofstream\` for writing
-- Learn to use \`std::ifstream\` for reading
-- Master error checking with \`is_open()\`
+- Practice using std::ofstream for writing
+- Learn to use std::ifstream for reading
+- Master error checking with is_open()
 - Understand RAII for file handling
 - See automatic resource cleanup in action
 
 ## Hints
 
-- Use \`std::ofstream\` for writing
-- Use \`std::ifstream\` for reading
-- Check \`is_open()\` after opening files
-- Use \`std::getline\` for reading lines safely
+- Use std::ofstream for writing
+- Use std::ifstream for reading  
+- Check is_open() after opening files
+- Use std::getline for reading lines safely
 - Files automatically close with RAII
-- Return false on errors for proper error handling
-`,
+- Return false on errors for proper error handling`,
           code: {
             language: "cpp",
             starter: `#include <iostream>
@@ -299,7 +345,7 @@ bool readFromFile(const std::string& filename) {
 
 int main() {
     const std::string filename = "test.txt";
-    const std::string content = "Line 1\nLine 2\nLine 3";
+    const std::string content = "Line 1\\nLine 2\\nLine 3";
     
     std::cout << "Writing to file..." << std::endl;
     // TODO: Call writeToFile
@@ -364,19 +410,19 @@ bool readFromFile(const std::string& filename) {
 
 int main() {
     const std::string filename = "test.txt";
-    const std::string content = "Line 1\nLine 2\nLine 3";
+    const std::string content = "Line 1\\nLine 2\\nLine 3";
     
     std::cout << "=== Writing to file ===" << std::endl;
     if (!writeToFile(filename, content)) {
         return 1;
     }
     
-    std::cout << "\n=== Reading from file ===" << std::endl;
+    std::cout << "\\n=== Reading from file ===" << std::endl;
     if (!readFromFile(filename)) {
         return 1;
     }
     
-    std::cout << "\n=== Success ===" << std::endl;
+    std::cout << "\\n=== Success ===" << std::endl;
     return 0;
 }`,
             tests: `// Test: Program compiles without errors
@@ -384,7 +430,7 @@ int main() {
 // Test: Content written correctly
 // Test: File read successfully
 // Test: Error handling works properly
-// Test: Files automatically closed (RAII)`
+// Test: Files automatically closed (RAII)`,
           },
         },
       },
@@ -468,123 +514,85 @@ int main() {
         content: {
           markdown: `# Validating Untrusted Input
 
-## Why Input Validation Matters
+## The Input Validation Problem
 
-Every external input to your program—data from users, files, network sockets, environment variables—must be treated as untrusted. Failing to validate and sanitize it can lead to buffer overflows, injection attacks (SQL, command, format string), path traversal, and data corruption. Attackers often craft malicious inputs precisely to exploit these weaknesses. Proper validation is your first line of defense.
+Never trust data from external sources. Unvalidated input is a leading cause of security vulnerabilities including buffer overflows, injection attacks, and data corruption.
 
-## Principles of Input Validation
+## Validation Strategies
 
-- **Accept known good, reject everything else (whitelisting)**. It is much easier to define a set of valid inputs (alphanumeric user names, specific command keywords, allowed file types) than it is to enumerate all possible malicious patterns.
-- **Validate length** before copying or parsing to prevent buffer overflows.
-- **Validate type** by converting strings to numeric types using functions like \`std::stoi()\`, \`std::stol()\`, or \`std::from_chars()\` inside a try/catch to detect invalid formats.
-- **Validate format** using regular expressions for complex patterns like email addresses, IPv4 addresses, or dates.
-- **Sanitize and escape** by removing or replacing characters that have special meaning in commands, file names, or queries (e.g., \`;\`, \`&\`, \`|\`, backticks).
-- **Canonicalize** input (normalize file paths with \`std::filesystem::canonical\`) before validating to avoid bypasses using relative paths like \`../\`.
+### Whitelist Validation (Preferred)
 
-Validate as early as possible—ideally right at the boundary of your application—before the data is ever used.
+Only allow known good inputs:
 
-## Whitelisting Example: User Name
-
-Allow only alphanumeric characters and enforce a reasonable length.
-
-// ...
+\`\`\`cpp
 bool isValidUsername(const std::string& username) {
     if (username.length() < 3 || username.length() > 20) {
         return false;
     }
+    
+    // Only allow alphanumeric characters
     for (char c : username) {
-        if (!std::isalnum(static_cast<unsigned char>(c))) {
+        if (!std::isalnum(c)) {
             return false;
         }
     }
+    
     return true;
 }
-```
+\`\`\`
 
-## Length and Type Checking
+### Length Checking
 
-If you expect a numeric value, enforce length and convert it safely:
+Always enforce maximum lengths:
 
-// ...
-const size_t MAX_LENGTH = 10;
-std::string input = getInputFromUser();
+\`\`\`cpp
 if (input.length() > MAX_LENGTH) {
-    std::cerr << "Input too long\n";
-    // reject or truncate input
+    // Reject or truncate
+    input = input.substr(0, MAX_LENGTH);
 }
+\`\`\`
 
+### Type Checking
+
+Verify data types before processing:
+
+\`\`\`cpp
 try {
     int value = std::stoi(input);
-    // use value
-} catch (const std::exception&) {
-    std::cerr << "Invalid number\n";
-    // reject input
+    // Use value
+} catch (const std::exception& e) {
+    std::cerr << "Invalid integer" << std::endl;
 }
-```
+\`\`\`
 
-## Format Validation with Regular Expressions
+### Format Validation
 
-For complex formats like email addresses or IPv4 addresses, use \`std::regex\`:
+Use regular expressions for complex patterns:
 
-// ...
+\`\`\`cpp
 #include <regex>
 
 bool isValidEmail(const std::string& email) {
     static const std::regex pattern(
-        R"(^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$)"
+        R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$)"
     );
     return std::regex_match(email, pattern);
 }
-```
+\`\`\`
 
-## Sanitizing Dangerous Characters
+## Key Principles
 
-When accepting free-form input (e.g., chat messages), remove or escape characters that could be interpreted by downstream components (shells, SQL engines):
+**Always validate length** to prevent buffer overflows.
 
-// ...
-std::string sanitize(const std::string& input) {
-    std::string result;
-    for (char c : input) {
-        switch (c) {
-            case ';':
-            case '&':
-            case '|':
-            case '`':
-            case '$':
-            case '>':
-                // skip dangerous characters or encode them
-                continue;
-            default:
-                result += c;
-        }
-    }
-    return result;
-}
-```
+**Use whitelist validation** instead of blacklist when possible.
 
-## Path Validation and Canonicalization
+**Sanitize input** by removing dangerous characters.
 
-When working with file names provided by users, ensure they do not escape the intended directory. Use \`std::filesystem\` (C++17) to canonicalize and check the path:
+**Validate early** before processing or storing data.
 
-// ...
-#include <filesystem>
-bool isValidPath(const std::filesystem::path& base, const std::filesystem::path& userPath) {
-    auto canon = std::filesystem::weakly_canonical(base / userPath);
-    return canon.string().rfind(base.string(), 0) == 0; // path starts with base
-}
-```
+**Fail securely** by rejecting invalid input rather than trying to fix it.
 
-## Key Takeaways
-
-- Validate every piece of external data before using it.
-- Use whitelisting and length checks to constrain inputs to expected formats.
-- Use \`std::regex\` for complex pattern validation.
-- Sanitize or escape characters that may have special meaning in other contexts.
-- Canonicalize file paths before validation to avoid directory traversal.
-- Fail securely: when input is invalid, reject it and log the error rather than trying to guess what the user intended.
-
-Next, you'll learn how to handle errors and exceptions robustly during I/O and parsing.
-`,
+Next, we'll explore robust error handling for I/O operations.`,
         },
       },
     ],
@@ -602,113 +610,81 @@ Next, you'll learn how to handle errors and exceptions robustly during I/O and p
         content: {
           markdown: `# Exception-Safe I/O
 
-## Why Robust Error Handling Matters
+## Why Exception Safety Matters
 
-Real programs run in unpredictable environments: files may not exist, network connections may drop, disks may fill up, or input may be malformed. Without robust error handling, such failures lead to crashes, resource leaks, corrupted data, or security vulnerabilities. Your code should gracefully detect and handle errors, cleaning up resources and communicating problems to the caller.
+I/O operations can fail in many ways: file not found, permission denied, disk full, network errors. Exception-safe code handles these failures gracefully without leaking resources.
 
-## RAII and Resource Safety
+## RAII for I/O
 
-Resource Acquisition Is Initialization (RAII) is a core C++ idiom: acquire a resource (file handle, mutex, network socket) in an object's constructor and release it in the destructor. This ensures that resources are always freed when the object goes out of scope, even if exceptions are thrown.
+File streams automatically clean up even when exceptions are thrown:
 
-// ...
-void readFile(const std::string& filename) {
-    std::ifstream in(filename);  // acquires file handle
-    if (!in) {
-        throw std::runtime_error("Cannot open " + filename);
+\`\`\`cpp
+void processFile(const std::string& filename) {
+    std::ifstream file(filename);
+    // File automatically closed even if exception thrown below
+    
+    if (!file) {
+        throw std::runtime_error("Cannot open file");
     }
-    // file handle released automatically when 'in' goes out of scope
+    
+    // Process file...
 }
-```
+\`\`\`
 
-In addition to file streams, use RAII wrappers like \`std::unique_ptr\` for dynamic memory, \`std::lock_guard\` for mutexes, and \`std::vector\` for arrays.
-
-## Exception Handling Patterns
+## Error Handling Patterns
 
 ### Check and Throw
 
-Check preconditions and throw an exception when an operation cannot proceed. Use descriptive exception types to communicate the problem.
-
-// ...
+\`\`\`cpp
 if (!file.is_open()) {
-    throw std::ios_base::failure("Failed to open file");
+    throw std::runtime_error("Failed to open file");
 }
-```
+\`\`\`
 
 ### Try-Catch for Recovery
 
-Wrap operations in a \`try\` block and catch exceptions to handle them, log the error, and recover or propagate to the caller.
-
-// ...
+\`\`\`cpp
 try {
-    readFile("data.txt");
-    parseInput();
-} catch (const std::ios_base::failure& ex) {
-    std::cerr << "I/O error: " << ex.what() << std::endl;
-    // maybe ask user for a different file
-} catch (const std::exception& ex) {
-    std::cerr << "Unexpected error: " << ex.what() << std::endl;
-    // terminate or rethrow
+    processFile("data.txt");
+} catch (const std::exception& e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+    // Attempt recovery or use default
 }
-```
+\`\`\`
 
-### Error Codes for Expected Failures
+### Error Codes for Critical Paths
 
-In performance-critical code or APIs that cannot use exceptions, return error codes or use types like \`std::optional\` or \`std::variant\` to communicate failure without throwing.
+When exceptions aren't appropriate:
 
-// ...
-enum class FileStatus {
+\`\`\`cpp
+enum class FileError {
     Success,
     NotFound,
     PermissionDenied,
-    FormatError
+    Unknown
 };
 
-FileStatus loadFile(const std::string& filename, std::string& out) {
-    std::ifstream in(filename);
-    if (!in) {
-        return FileStatus::NotFound;
+FileError readFile(const std::string& filename, std::string& content) {
+    std::ifstream file(filename);
+    if (!file) {
+        return FileError::NotFound;
     }
-    // read file...
-    return FileStatus::Success;
+    // Read file...
+    return FileError::Success;
 }
-```
-
-Clients must check the returned status and handle each case appropriately.
-
-## Error Logging and Diagnostics
-
-Log errors with enough context to diagnose the problem: include filenames, operation names, and the reason for failure. Avoid leaking sensitive information to users. Use logging frameworks or standard error output.
-
-## Clean-Up Strategies
-
-Regardless of how errors are signaled, always release resources and restore invariants. RAII is the easiest way to achieve this, but when working with APIs that do not follow RAII, use \`try\`/\`catch\` and \`finally\`-like patterns (in C++ use destructors of local objects) to ensure clean-up.
-
-// ...
-std::FILE* f = std::fopen("data.txt", "r");
-if (!f) {
-    // handle error
-    return;
-}
-try {
-    // use f
-    // possible throw
-} catch (...) {
-    std::fclose(f);
-    throw; // rethrow after cleanup
-}
-std::fclose(f);
-```
+\`\`\`
 
 ## Key Takeaways
 
-- Use RAII everywhere to guarantee resource release.
-- Use exceptions for unexpected, unrecoverable errors; use error codes for anticipated conditions.
-- Surround operations that may throw with \`try\`/\`catch\` to log and recover.
-- Always clean up resources, even when errors occur.
-- Provide meaningful error messages and log relevant details without exposing sensitive data.
+**Use RAII** for automatic resource cleanup even with exceptions.
 
-You have now built a solid foundation in safe file I/O, input validation, and robust error handling—critical skills for building secure C++ applications.
-`,
+**Throw exceptions for unexpected errors** that can't be handled locally.
+
+**Use error codes** for expected failures in performance-critical code.
+
+**Always clean up resources** regardless of success or failure.
+
+This completes the File Parsing and I/O module.`,
         },
       },
     ],
